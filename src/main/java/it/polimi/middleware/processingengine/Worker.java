@@ -18,8 +18,8 @@ public class Worker extends AbstractActor {
         this.operator = operator;
     }
 
-    public static Props props(List<ActorRef> downstreamWorkers) {
-        return Props.create(Worker.class, downstreamWorkers);
+    public static Props props(List<ActorRef> downstreamWorkers, Operator operator) {
+        return Props.create(Worker.class, downstreamWorkers, operator);
     }
 
     @Override
