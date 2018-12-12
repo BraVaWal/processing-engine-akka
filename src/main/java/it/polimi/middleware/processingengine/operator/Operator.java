@@ -14,7 +14,7 @@ public abstract class Operator {
     public abstract void operate(Message message);
 
     void tellWorker(Message message) {
-        worker.tell(message);
+        worker.sendDownstream(message);
     }
 
 }
