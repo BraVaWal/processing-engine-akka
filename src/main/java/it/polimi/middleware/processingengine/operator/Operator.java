@@ -1,4 +1,7 @@
-package it.polimi.middleware.processingengine;
+package it.polimi.middleware.processingengine.operator;
+
+import it.polimi.middleware.processingengine.Message;
+import it.polimi.middleware.processingengine.Worker;
 
 import java.util.List;
 
