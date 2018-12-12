@@ -1,20 +1,18 @@
 package it.polimi.middleware.processingengine.operator;
 
 import it.polimi.middleware.processingengine.Message;
-import it.polimi.middleware.processingengine.Worker;
 import it.polimi.middleware.processingengine.function.MapFunction;
 
 public class MapOperator extends Operator {
 
     private final MapFunction mapFunction;
 
-    public MapOperator(Worker worker, MapFunction mapFunction) {
-        super(worker);
+    public MapOperator(MapFunction mapFunction) {
         this.mapFunction = mapFunction;
     }
 
     @Override
-    public void operate(Message message) {
-        tellWorker(mapFunction.map(message));
+    public void operate(Message message, SendDownStreamListener listener) {
+        listener.onSendDownstream(mapFunction.map(message));
     }
 }

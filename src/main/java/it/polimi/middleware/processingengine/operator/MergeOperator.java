@@ -1,16 +1,15 @@
 package it.polimi.middleware.processingengine.operator;
 
 import it.polimi.middleware.processingengine.Message;
-import it.polimi.middleware.processingengine.Worker;
 
-public class MergeOperator extends Operator{
+public class MergeOperator extends Operator {
 
-    public MergeOperator(Worker worker) {
-        super(worker);
+    public MergeOperator() {
+
     }
 
     @Override
-    public void operate(Message message) {
-        tellWorker(message);
+    public void operate(Message message, SendDownStreamListener listener) {
+        listener.onSendDownstream(message);
     }
 }

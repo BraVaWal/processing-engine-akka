@@ -2,10 +2,10 @@ package it.polimi.middleware.processingengine.operator;
 
 import it.polimi.middleware.processingengine.Message;
 
-public class SplitOperator extends Operator {
+public class SinkOperator extends Operator {
 
     @Override
     public void operate(Message message, SendDownStreamListener listener) {
-        listener.onSendDownstream(message);
+        System.out.println("--- Message received: [" + message.getKey() + ", " + message.getValue() + "] ---");
     }
 }

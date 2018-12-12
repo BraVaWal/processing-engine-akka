@@ -1,7 +1,6 @@
 package it.polimi.middleware.processingengine.operator;
 
 import it.polimi.middleware.processingengine.Message;
-import it.polimi.middleware.processingengine.Worker;
 import it.polimi.middleware.processingengine.function.AggregateFunction;
 
 import java.util.ArrayList;
@@ -18,8 +17,7 @@ public class AggregateOperator extends Operator {
 
     private final Map<String, List<String>> windows;
 
-    public AggregateOperator(Worker worker, AggregateFunction aggregateFunction, int windowSize, int windowSlide) {
-        super(worker);
+    public AggregateOperator(AggregateFunction aggregateFunction, int windowSize, int windowSlide) {
         this.aggregateFunction = aggregateFunction;
         this.windowSize = windowSize;
         this.windowSlide = windowSlide;
@@ -27,11 +25,11 @@ public class AggregateOperator extends Operator {
     }
 
     @Override
-    public void operate(Message message) {
+    public void operate(Message message, SendDownStreamListener listener) {
         addToWindow(message);
-        if(windowIsFull(message.getKey())) {
+        if (windowIsFull(message.getKey())) {
             Message result = aggregateFunction.aggregate(message.getKey(), getWindow(message.getKey()));
-            tellWorker(result);
+            listener.onSendDownstream(result);
             slideWindow(message.getKey());
         }
     }
