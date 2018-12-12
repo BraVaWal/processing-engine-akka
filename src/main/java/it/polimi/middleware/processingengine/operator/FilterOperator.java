@@ -4,7 +4,7 @@ import it.polimi.middleware.processingengine.Message;
 
 import java.util.function.Predicate;
 
-public class FilterOperator extends Operator {
+public class FilterOperator implements Operator {
 
     private final Predicate<Message> predicate;
 

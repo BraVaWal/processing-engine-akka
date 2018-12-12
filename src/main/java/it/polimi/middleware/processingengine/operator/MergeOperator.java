@@ -2,7 +2,7 @@ package it.polimi.middleware.processingengine.operator;
 
 import it.polimi.middleware.processingengine.Message;
 
-public class MergeOperator extends Operator {
+public class MergeOperator implements Operator {
 
     public MergeOperator() {
 

@@ -5,7 +5,7 @@ import it.polimi.middleware.processingengine.function.FlatMapFunction;
 
 import java.util.Collection;
 
-public class FlatMapOperator extends Operator {
+public class FlatMapOperator implements Operator {
 
     private final FlatMapFunction flatMapFunction;
 

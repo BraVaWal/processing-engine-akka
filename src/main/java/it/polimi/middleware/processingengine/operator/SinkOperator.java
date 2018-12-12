@@ -2,7 +2,7 @@ package it.polimi.middleware.processingengine.operator;
 
 import it.polimi.middleware.processingengine.Message;
 
-public class SinkOperator extends Operator {
+public class SinkOperator implements Operator {
 
     @Override
     public void operate(Message message, SendDownStreamListener listener) {

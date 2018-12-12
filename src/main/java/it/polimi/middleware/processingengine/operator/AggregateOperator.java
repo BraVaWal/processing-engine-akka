@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AggregateOperator extends Operator {
+public class AggregateOperator implements Operator {
 
     private final AggregateFunction aggregateFunction;
 
