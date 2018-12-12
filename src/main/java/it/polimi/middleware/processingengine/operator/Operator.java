@@ -15,7 +15,7 @@ public abstract class Operator {
 
     public abstract void operate(Message message);
 
-    protected void tell(Message message) {
+    void tell(Message message) {
         parent.tell(message);
     }
 
