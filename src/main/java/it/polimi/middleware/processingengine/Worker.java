@@ -10,11 +10,10 @@ public class Worker extends AbstractActor {
     
     private final List<ActorRef> downstreamWorkers;
 
-    private final Operator operator;
+    private Operator operator;
 
-    public Worker(List<ActorRef> downstreamWorkers, Operator operator) {
+    public Worker(List<ActorRef> downstreamWorkers) {
         this.downstreamWorkers = downstreamWorkers;
-        this.operator = operator;
     }
 
     @Override
@@ -22,6 +21,10 @@ public class Worker extends AbstractActor {
         return receiveBuilder()
                 .match(Message.class, operator::operate)
                 .build();
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
     }
 
     public void sendDownstream(Message message) {
