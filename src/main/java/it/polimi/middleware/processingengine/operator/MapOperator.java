@@ -8,13 +8,13 @@ public class MapOperator extends Operator {
 
     private final MapFunction mapFunction;
 
-    public MapOperator(Worker parent, MapFunction mapFunction) {
-        super(parent);
+    public MapOperator(Worker worker, MapFunction mapFunction) {
+        super(worker);
         this.mapFunction = mapFunction;
     }
 
     @Override
     public void operate(Message message) {
-        tell(mapFunction.map(message));
+        tellWorker(mapFunction.map(message));
     }
 }

@@ -18,8 +18,8 @@ public class AggregateOperator extends Operator {
 
     private final Map<String, List<String>> windows;
 
-    public AggregateOperator(Worker parent, AggregateFunction aggregateFunction, int windowSize, int windowSlide) {
-        super(parent);
+    public AggregateOperator(Worker worker, AggregateFunction aggregateFunction, int windowSize, int windowSlide) {
+        super(worker);
         this.aggregateFunction = aggregateFunction;
         this.windowSize = windowSize;
         this.windowSlide = windowSlide;
@@ -31,7 +31,7 @@ public class AggregateOperator extends Operator {
         addToWindow(message);
         if(windowIsFull(message.getKey())) {
             Message result = aggregateFunction.aggregate(message.getKey(), getWindow(message.getKey()));
-            tell(result);
+            tellWorker(result);
             slideWindow(message.getKey());
         }
     }

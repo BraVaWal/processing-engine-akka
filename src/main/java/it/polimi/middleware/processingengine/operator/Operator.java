@@ -3,20 +3,18 @@ package it.polimi.middleware.processingengine.operator;
 import it.polimi.middleware.processingengine.Message;
 import it.polimi.middleware.processingengine.Worker;
 
-import java.util.List;
-
 public abstract class Operator {
 
-    private final Worker parent;
+    private final Worker worker;
 
-    public Operator(Worker parent) {
-        this.parent = parent;
+    public Operator(Worker worker) {
+        this.worker = worker;
     }
 
     public abstract void operate(Message message);
 
-    void tell(Message message) {
-        parent.tell(message);
+    void tellWorker(Message message) {
+        worker.tell(message);
     }
 
 }

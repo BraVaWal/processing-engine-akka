@@ -5,12 +5,12 @@ import it.polimi.middleware.processingengine.Worker;
 
 public class SplitOperator extends Operator {
 
-    public SplitOperator(Worker parent) {
-        super(parent);
+    public SplitOperator(Worker worker) {
+        super(worker);
     }
 
     @Override
     public void operate(Message message) {
-        tell(message);
+        tellWorker(message);
     }
 }

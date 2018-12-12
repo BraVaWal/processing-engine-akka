@@ -9,8 +9,8 @@ public class FilterOperator extends Operator {
 
     private final Predicate<Message> predicate;
 
-    public FilterOperator(Worker parent, Predicate<Message> predicate) {
-        super(parent);
+    public FilterOperator(Worker worker, Predicate<Message> predicate) {
+        super(worker);
         this.predicate = predicate;
     }
 
@@ -18,7 +18,7 @@ public class FilterOperator extends Operator {
     @Override
     public void operate(Message message) {
         if (predicate.test(message)) {
-            tell(message);
+            tellWorker(message);
         }
     }
 }

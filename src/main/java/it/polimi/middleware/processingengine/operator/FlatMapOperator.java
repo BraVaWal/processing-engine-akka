@@ -10,8 +10,8 @@ public class FlatMapOperator extends Operator{
 
     private final FlatMapFunction flatMapFunction;
 
-    public FlatMapOperator(Worker parent, FlatMapFunction flatMapFunction) {
-        super(parent);
+    public FlatMapOperator(Worker worker, FlatMapFunction flatMapFunction) {
+        super(worker);
         this.flatMapFunction = flatMapFunction;
     }
 
@@ -19,7 +19,7 @@ public class FlatMapOperator extends Operator{
     public void operate(Message message) {
         Collection<Message> result = flatMapFunction.flatMap(message);
         for (Message m : result) {
-            tell(m);
+            tellWorker(m);
         }
     }
 }

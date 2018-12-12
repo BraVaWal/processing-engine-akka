@@ -5,12 +5,12 @@ import it.polimi.middleware.processingengine.Worker;
 
 public class MergeOperator extends Operator{
 
-    public MergeOperator(Worker parent) {
-        super(parent);
+    public MergeOperator(Worker worker) {
+        super(worker);
     }
 
     @Override
     public void operate(Message message) {
-        tell(message);
+        tellWorker(message);
     }
 }
