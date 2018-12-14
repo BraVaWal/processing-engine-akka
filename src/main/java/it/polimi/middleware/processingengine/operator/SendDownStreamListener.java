@@ -1,6 +1,6 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.Message;
+import it.polimi.middleware.processingengine.message.Message;
 
 public interface SendDownStreamListener {
 

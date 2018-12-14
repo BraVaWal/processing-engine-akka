@@ -1,6 +1,7 @@
 package it.polimi.middleware.processingengine;
 
 import akka.actor.ActorRef;
+import it.polimi.middleware.processingengine.message.Message;
 
 import java.util.Random;
 

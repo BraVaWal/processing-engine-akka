@@ -3,6 +3,7 @@ package it.polimi.middleware.processingengine;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import it.polimi.middleware.processingengine.message.Message;
 import it.polimi.middleware.processingengine.operator.Operator;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package it.polimi.middleware.processingengine;
+package it.polimi.middleware.processingengine.message;
 
 public class Message {
 

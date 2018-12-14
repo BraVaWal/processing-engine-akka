@@ -1,6 +1,6 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.Message;
+import it.polimi.middleware.processingengine.message.Message;
 
 import java.util.function.Predicate;
 

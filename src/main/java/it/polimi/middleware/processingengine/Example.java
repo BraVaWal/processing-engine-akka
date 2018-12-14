@@ -2,6 +2,7 @@ package it.polimi.middleware.processingengine;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import it.polimi.middleware.processingengine.message.Message;
 import it.polimi.middleware.processingengine.operator.*;
 
 import java.util.ArrayList;
