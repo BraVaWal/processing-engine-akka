@@ -1,9 +1,9 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 public interface Operator {
 
-    void operate(Message message, SendDownStreamListener listener);
+    void operate(OperateMessage operateMessage, SendDownStreamListener listener);
 
 }

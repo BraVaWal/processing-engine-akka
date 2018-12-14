@@ -1,9 +1,9 @@
 package it.polimi.middleware.processingengine.function;
 
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 public interface MapFunction {
 
-    Message map(Message message);
+    OperateMessage map(OperateMessage operateMessage);
 
 }

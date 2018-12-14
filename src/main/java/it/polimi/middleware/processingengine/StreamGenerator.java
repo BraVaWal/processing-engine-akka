@@ -1,7 +1,7 @@
 package it.polimi.middleware.processingengine;
 
 import akka.actor.ActorRef;
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 import java.util.Random;
 
@@ -26,8 +26,8 @@ public class StreamGenerator implements Runnable {
             String key = randomString(keySize);
             String value = randomString(valueSize);
 
-            Message message = new Message(key, value);
-            downstream.tell(message, ActorRef.noSender());
+            OperateMessage operateMessage = new OperateMessage(key, value);
+            downstream.tell(operateMessage, ActorRef.noSender());
             try {
                 Thread.sleep((long) (1000 / messagesPerSecond));
             } catch (InterruptedException e) {

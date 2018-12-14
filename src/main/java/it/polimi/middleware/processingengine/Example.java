@@ -2,7 +2,7 @@ package it.polimi.middleware.processingengine;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 import it.polimi.middleware.processingengine.operator.*;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class Example {
             int end = start + 8;
             sb.insert(start, "--->");
             sb.insert(end, "<---");
-            return new Message(message.getKey(), sb.toString());
+            return new OperateMessage(message.getKey(), sb.toString());
         }));
 
         ActorRef merge = createWorker(system, Collections.singletonList(map), new MergeOperator());

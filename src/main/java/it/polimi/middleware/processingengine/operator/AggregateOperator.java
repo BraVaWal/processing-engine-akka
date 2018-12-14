@@ -1,6 +1,6 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 import it.polimi.middleware.processingengine.function.AggregateFunction;
 
 import java.util.ArrayList;
@@ -25,17 +25,17 @@ public class AggregateOperator implements Operator {
     }
 
     @Override
-    public void operate(Message message, SendDownStreamListener listener) {
-        addToWindow(message);
-        if (windowIsFull(message.getKey())) {
-            Message result = aggregateFunction.aggregate(message.getKey(), getWindow(message.getKey()));
+    public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
+        addToWindow(operateMessage);
+        if (windowIsFull(operateMessage.getKey())) {
+            OperateMessage result = aggregateFunction.aggregate(operateMessage.getKey(), getWindow(operateMessage.getKey()));
             listener.onSendDownstream(result);
-            slideWindow(message.getKey());
+            slideWindow(operateMessage.getKey());
         }
     }
 
-    private void addToWindow(Message message) {
-        getWindow(message.getKey()).add(message.getValue());
+    private void addToWindow(OperateMessage operateMessage) {
+        getWindow(operateMessage.getKey()).add(operateMessage.getValue());
     }
 
     private List<String> getWindow(String key) {

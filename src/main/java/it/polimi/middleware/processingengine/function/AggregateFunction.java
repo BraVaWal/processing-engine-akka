@@ -1,11 +1,11 @@
 package it.polimi.middleware.processingengine.function;
 
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 import java.util.Collection;
 
 public interface AggregateFunction {
 
-    Message aggregate(String key, Collection<String> values);
+    OperateMessage aggregate(String key, Collection<String> values);
 
 }

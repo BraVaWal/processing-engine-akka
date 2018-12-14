@@ -1,9 +1,9 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 public interface SendDownStreamListener {
 
-    void onSendDownstream(Message message);
+    void onSendDownstream(OperateMessage operateMessage);
 
 }

@@ -1,11 +1,11 @@
 package it.polimi.middleware.processingengine.message;
 
-public class Message {
+public class OperateMessage {
 
     private final String key;
     private final String value;
 
-    public Message(String key, String value) {
+    public OperateMessage(String key, String value) {
         this.key = key;
         this.value = value;
     }

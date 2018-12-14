@@ -1,11 +1,11 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.message.Message;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 public class SplitOperator implements Operator {
 
     @Override
-    public void operate(Message message, SendDownStreamListener listener) {
-        listener.onSendDownstream(message);
+    public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
+        listener.onSendDownstream(operateMessage);
     }
 }
