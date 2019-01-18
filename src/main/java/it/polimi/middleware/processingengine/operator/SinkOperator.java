@@ -6,6 +6,6 @@ public class SinkOperator implements Operator {
 
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
-        System.out.println("--- OperateMessage received: [" + operateMessage.getKey() + ", " + operateMessage.getValue() + "] ---");
+        System.out.println("--- OperateMessage received: " + operateMessage + " ---");
     }
 }

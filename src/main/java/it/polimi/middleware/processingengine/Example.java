@@ -12,27 +12,30 @@ import java.util.List;
 public class Example {
 
     public static void main(String[] args) {
+        String requestedWord = args[0].toLowerCase();
+
         final ActorSystem system = ActorSystem.create("System");
 
         ActorRef sink = createWorker(system, new ArrayList<>(), new SinkOperator());
         ActorRef map = createWorker(system, Collections.singletonList(sink), new MapOperator(message -> {
             StringBuilder sb = new StringBuilder(message.getValue());
-            int start = message.getValue().indexOf("poli");
-            int end = start + 8;
+            int start = message.getValue().indexOf(requestedWord);
+            int end = start + 4 + requestedWord.length();
             sb.insert(start, "--->");
             sb.insert(end, "<---");
             return new OperateMessage(message.getKey(), sb.toString());
         }));
 
+
         ActorRef merge = createWorker(system, Collections.singletonList(map), new MergeOperator());
-        ActorRef filter1 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter2 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter3 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter4 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter5 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter6 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter7 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
-        ActorRef filter8 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains("poli")));
+        ActorRef filter1 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter2 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter3 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter4 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter5 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter6 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter7 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
+        ActorRef filter8 = createWorker(system, Collections.singletonList(merge), new FilterOperator(message -> message.getValue().contains(requestedWord)));
 
         StreamGenerator generator1 = new StreamGenerator(filter1, 1, 32, 1000);
         StreamGenerator generator2 = new StreamGenerator(filter2, 1, 32, 1000);
