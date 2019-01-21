@@ -3,8 +3,15 @@ package it.polimi.middleware.processingengine;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import it.polimi.middleware.processingengine.message.AddJobMessage;
 import spark.Request;
 import spark.Response;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -42,7 +49,10 @@ public class RestServerActor extends AbstractActor {
     }
 
     private Object postJob(Request request, Response response) {
-        return "Input";
+        Type listType = new TypeToken<ArrayList<KeyValuePair>>(){}.getType();
+        ArrayList<KeyValuePair> data = new Gson().fromJson(request.body(), listType);
+        supervisorActor.tell(new AddJobMessage(data), self());
+        return data;
     }
 
 }

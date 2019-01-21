@@ -50,7 +50,7 @@ public class Worker extends AbstractActor {
     }
 
     private void sendDownstream(OperateMessage operateMessage) {
-        int receiver = operateMessage.getKey().hashCode() % downstreamWorkers.size();
+        int receiver = operateMessage.getKeyValuePair().getKey().hashCode() % downstreamWorkers.size();
         downstreamWorkers.get(receiver).tell(operateMessage, self());
     }
 }

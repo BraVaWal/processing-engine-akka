@@ -26,7 +26,7 @@ public class StreamGenerator implements Runnable {
             String key = randomString(keySize);
             String value = randomString(valueSize);
 
-            OperateMessage operateMessage = new OperateMessage(key, value);
+            OperateMessage operateMessage = new OperateMessage(new KeyValuePair(key, value));
             downstream.tell(operateMessage, ActorRef.noSender());
             try {
                 Thread.sleep((long) (1000 / messagesPerSecond));
