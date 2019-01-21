@@ -24,7 +24,7 @@ public class Application {
 
         supervisorActor.tell(new AddOperatorMessage(Collections.singletonList(sourceWorker),
                 Collections.singletonList(sinkWorker),
-                new MapOperator(message -> new OperateMessage(message.getKey(), message.getValue().toUpperCase()))),
+                new MapOperator(keyValuePair -> new KeyValuePair(keyValuePair.getKey(), keyValuePair.getValue().toUpperCase()))),
                 ActorRef.noSender());
     }
 
