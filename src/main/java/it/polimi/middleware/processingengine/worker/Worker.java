@@ -1,4 +1,4 @@
-package it.polimi.middleware.processingengine;
+package it.polimi.middleware.processingengine.worker;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;

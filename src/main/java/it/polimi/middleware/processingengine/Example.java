@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 import it.polimi.middleware.processingengine.operator.*;
+import it.polimi.middleware.processingengine.worker.Worker;
 
 import java.util.ArrayList;
 import java.util.Collections;
