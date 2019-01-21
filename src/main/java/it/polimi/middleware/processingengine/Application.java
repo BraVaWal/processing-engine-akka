@@ -14,7 +14,7 @@ public class Application {
         ActorRef sinkWorker = system.actorOf(SinkWorker.props());
         ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker));
 
-
+        ActorRef restServerActor = system.actorOf(RestServerActor.props(supervisorActor));
     }
 
 }

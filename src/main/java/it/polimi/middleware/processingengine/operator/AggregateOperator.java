@@ -1,7 +1,7 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.message.OperateMessage;
 import it.polimi.middleware.processingengine.function.AggregateFunction;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

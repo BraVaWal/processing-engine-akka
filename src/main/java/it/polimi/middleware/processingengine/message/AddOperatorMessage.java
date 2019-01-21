@@ -2,7 +2,6 @@ package it.polimi.middleware.processingengine.message;
 
 import it.polimi.middleware.processingengine.OperatorType;
 
-import java.util.Collection;
 import java.util.List;
 
 public class AddOperatorMessage {

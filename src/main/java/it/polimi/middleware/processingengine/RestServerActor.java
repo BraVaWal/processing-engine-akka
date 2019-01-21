@@ -2,13 +2,15 @@ package it.polimi.middleware.processingengine;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.actor.Props;
 import it.polimi.middleware.processingengine.message.AddOperatorMessage;
 import spark.Request;
 import spark.Response;
 
 import java.util.Arrays;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 public class RestServerActor extends AbstractActor {
 
@@ -17,6 +19,10 @@ public class RestServerActor extends AbstractActor {
     public RestServerActor(ActorRef supervisorActor) {
         this.supervisorActor = supervisorActor;
         initEndPoints();
+    }
+
+    public static Props props(ActorRef supervisorActor) {
+        return Props.create(RestServerActor.class, supervisorActor);
     }
 
     private void initEndPoints() {

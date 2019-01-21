@@ -1,6 +1,5 @@
 package it.polimi.middleware.processingengine;
 
-import it.polimi.middleware.processingengine.operator.AggregateOperator;
 import it.polimi.middleware.processingengine.operator.Operator;
 import it.polimi.middleware.processingengine.operator.SplitOperator;
 

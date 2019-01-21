@@ -28,7 +28,7 @@ public class Worker extends AbstractActor {
         this.operator = operator;
     }
 
-    public static Props props(String id, Operator operator){
+    public static Props props(String id, Operator operator) {
         return Props.create(Worker.class, id, operator);
     }
 
