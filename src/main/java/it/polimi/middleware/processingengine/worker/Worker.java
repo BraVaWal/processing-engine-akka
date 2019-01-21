@@ -44,10 +44,6 @@ public class Worker extends AbstractActor {
                 .build();
     }
 
-    public void addDownstreamOperator(ActorRef downstreamOperator) {
-        downstreamWorkers.add(downstreamOperator);
-    }
-
     private void onOperateMessage(OperateMessage operateMessage) {
         operator.operate(operateMessage, this::sendDownstream);
     }
