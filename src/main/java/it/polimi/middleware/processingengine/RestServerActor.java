@@ -6,6 +6,8 @@ import it.polimi.middleware.processingengine.message.AddOperatorMessage;
 import spark.Request;
 import spark.Response;
 
+import java.util.Arrays;
+
 import static spark.Spark.*;
 
 public class RestServerActor extends AbstractActor {
@@ -39,8 +41,8 @@ public class RestServerActor extends AbstractActor {
     private Object postOperator(Request request, Response response) {
         supervisorActor.tell(new AddOperatorMessage(
                 request.queryParams("id"),
-                request.queryParams("sourceId"),
-                request.queryParams("sinkId"),
+                Arrays.asList(request.queryParamsValues("sources")),
+                Arrays.asList(request.queryParamsValues("sinkId")),
                 OperatorType.valueOf(request.queryParams("operatorType"))
         ), supervisorActor);
         return "Operator added";

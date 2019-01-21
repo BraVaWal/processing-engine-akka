@@ -2,35 +2,36 @@ package it.polimi.middleware.processingengine.message;
 
 import it.polimi.middleware.processingengine.OperatorType;
 
+import java.util.Collection;
+import java.util.List;
+
 public class AddOperatorMessage {
 
     private final String id;
-    private final String sourceId;
-    private final String sinkId;
+    private final List<String> sources;
+    private final List<String> downstream;
     private final OperatorType operatorType;
 
-    public AddOperatorMessage(String id, String sourceId, String sinkId, OperatorType operatorType) {
+    public AddOperatorMessage(String id, List<String> sources, List<String> downstream, OperatorType operatorType) {
         this.id = id;
-        this.sourceId = sourceId;
-        this.sinkId = sinkId;
+        this.sources = sources;
+        this.downstream = downstream;
         this.operatorType = operatorType;
     }
 
-
     public String getId() {
         return id;
-    }
-
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    public String getSinkId() {
-        return sinkId;
     }
 
     public OperatorType getOperatorType() {
         return operatorType;
     }
 
+    public List<String> getSources() {
+        return sources;
+    }
+
+    public List<String> getDownstream() {
+        return downstream;
+    }
 }

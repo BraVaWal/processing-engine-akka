@@ -19,13 +19,21 @@ public class Worker extends AbstractActor {
     private final Operator operator;
 
     public Worker(String id, Operator operator) {
+        this(id, operator, new LinkedList<>());
+    }
+
+    public Worker(String id, Operator operator, List<ActorRef> downstreamWorkers) {
         this.id = id;
-        this.downstreamWorkers = new LinkedList<>();
+        this.downstreamWorkers = downstreamWorkers;
         this.operator = operator;
     }
 
-    public static Props props(String id, Operator operator) {
+    public static Props props(String id, Operator operator){
         return Props.create(Worker.class, id, operator);
+    }
+
+    public static Props props(String id, Operator operator, List<ActorRef> downstreamWorkers) {
+        return Props.create(Worker.class, id, operator, downstreamWorkers);
     }
 
     @Override
