@@ -4,41 +4,42 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import it.polimi.middleware.processingengine.message.AddDownstreamMessage;
+import it.polimi.middleware.processingengine.message.AddOperatorMessage;
+import it.polimi.middleware.processingengine.worker.Worker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class SupervisorActor extends AbstractActor {
 
-    private Map<String, ActorRef> workers = new HashMap<>();
+    private ActorRef source;
+    private ActorRef sink;
+    private Collection<ActorRef> workers = new LinkedList<>();
 
     public SupervisorActor(ActorRef source, ActorRef sink) {
-        workers.put("source", source);
-        workers.put("sink", sink);
+        this.source = source;
+        this.sink = sink;
     }
 
     public static Props props(ActorRef source, ActorRef sink) {
         return Props.create(SupervisorActor.class, source, sink);
     }
 
-    private void addDownstreamOperator(ActorRef source, ActorRef downstream) {
-        source.tell(new AddDownstreamMessage(downstream), self());
+    private void addDownstreamOperator(ActorRef sourceWorker, ActorRef downstream) {
+        sourceWorker.tell(new AddDownstreamMessage(downstream), self());
     }
 
     @Override
     public Receive createReceive() {
-        return receiveBuilder().build();
+        return receiveBuilder()
+                .match(AddOperatorMessage.class, this::onAddOperator)
+                .build();
     }
 
-    private List<ActorRef> getMultipleWorkers(List<String> keys) {
-        List<ActorRef> result = new ArrayList<>(keys.size());
-        for (String s : keys) {
-            if (workers.containsKey(s)) {
-                result.add(workers.get(s));
-            }
+    private void onAddOperator(AddOperatorMessage message) {
+        ActorRef worker = getContext().actorOf(Worker.props(message.getOperator(), message.getDownstream()));
+        for (ActorRef s : message.getSources()) {
+            addDownstreamOperator(s, worker);
         }
-        return result;
     }
 }

@@ -12,28 +12,25 @@ import java.util.List;
 
 public class Worker extends AbstractActor {
 
-    private final String id;
-
     private final List<ActorRef> downstreamWorkers;
 
     private final Operator operator;
 
-    public Worker(String id, Operator operator) {
-        this(id, operator, new LinkedList<>());
+    public Worker(Operator operator) {
+        this(operator, new LinkedList<>());
     }
 
-    public Worker(String id, Operator operator, List<ActorRef> downstreamWorkers) {
-        this.id = id;
+    public Worker(Operator operator, List<ActorRef> downstreamWorkers) {
         this.downstreamWorkers = downstreamWorkers;
         this.operator = operator;
     }
 
-    public static Props props(String id, Operator operator) {
-        return Props.create(Worker.class, id, operator);
+    public static Props props(Operator operator) {
+        return Props.create(Worker.class, operator);
     }
 
-    public static Props props(String id, Operator operator, List<ActorRef> downstreamWorkers) {
-        return Props.create(Worker.class, id, operator, downstreamWorkers);
+    public static Props props(Operator operator, List<ActorRef> downstreamWorkers) {
+        return Props.create(Worker.class, operator, downstreamWorkers);
     }
 
     @Override
