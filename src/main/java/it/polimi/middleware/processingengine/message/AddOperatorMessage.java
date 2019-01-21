@@ -1,13 +1,15 @@
-package it.polimi.middleware.processingengine;
+package it.polimi.middleware.processingengine.message;
 
-public class OperatorDTO {
+import it.polimi.middleware.processingengine.OperatorType;
+
+public class AddOperatorMessage {
 
     private final String id;
     private final String sourceId;
     private final String sinkId;
     private final OperatorType operatorType;
 
-    public OperatorDTO(String id, String sourceId, String sinkId, OperatorType operatorType) {
+    public AddOperatorMessage(String id, String sourceId, String sinkId, OperatorType operatorType) {
         this.id = id;
         this.sourceId = sourceId;
         this.sinkId = sinkId;
@@ -30,4 +32,5 @@ public class OperatorDTO {
     public OperatorType getOperatorType() {
         return operatorType;
     }
+
 }
