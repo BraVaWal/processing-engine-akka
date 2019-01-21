@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SourceWorker extends Worker {
     public SourceWorker() {
-        super("source", new SplitOperator());
+        super(new SplitOperator());
     }
 
     public static Props props() {

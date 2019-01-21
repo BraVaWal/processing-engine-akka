@@ -5,7 +5,7 @@ import it.polimi.middleware.processingengine.operator.SinkOperator;
 
 public class SinkWorker extends Worker {
     public SinkWorker() {
-        super("sink", new SinkOperator());
+        super(new SinkOperator());
     }
 
     public static Props props() {

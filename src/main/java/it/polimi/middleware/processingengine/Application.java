@@ -2,8 +2,14 @@ package it.polimi.middleware.processingengine;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import it.polimi.middleware.processingengine.message.AddOperatorMessage;
+import it.polimi.middleware.processingengine.message.OperateMessage;
+import it.polimi.middleware.processingengine.operator.MapOperator;
 import it.polimi.middleware.processingengine.worker.SinkWorker;
 import it.polimi.middleware.processingengine.worker.SourceWorker;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Application {
 
@@ -16,7 +22,10 @@ public class Application {
 
         ActorRef restServerActor = system.actorOf(RestServerActor.props(supervisorActor));
 
-
+        supervisorActor.tell(new AddOperatorMessage(Collections.singletonList(sourceWorker),
+                Collections.singletonList(sinkWorker),
+                new MapOperator(message -> new OperateMessage(message.getKey(), message.getValue().toUpperCase()))),
+                ActorRef.noSender());
     }
 
 }
