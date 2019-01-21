@@ -2,6 +2,8 @@ package it.polimi.middleware.processingengine.worker;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.dsl.Creators;
 import it.polimi.middleware.processingengine.operator.Operator;
 
 import java.util.Collection;
@@ -19,8 +21,12 @@ public class MasterWorker extends AbstractActor {
         this.sink = sink;
     }
 
-    public void addOperator(List<ActorRef> downstreamWorkers, Operator operator) {
-        ActorRef worker = getContext().actorOf(Worker.props(downstreamWorkers, operator));
+    public static Props props(ActorRef source, ActorRef sink) {
+        return Props.create(MasterWorker.class, source, sink);
+    }
+
+    public void addOperator(Operator operator) {
+        ActorRef worker = getContext().actorOf(Worker.props(operator));
         workers.add(worker);
     }
 

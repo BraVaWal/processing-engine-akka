@@ -7,6 +7,7 @@ import it.polimi.middleware.processingengine.message.AddDownstreamMessage;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 import it.polimi.middleware.processingengine.operator.Operator;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Worker extends AbstractActor {
@@ -15,13 +16,13 @@ public class Worker extends AbstractActor {
 
     private final Operator operator;
 
-    public Worker(List<ActorRef> downstreamWorkers, Operator operator) {
-        this.downstreamWorkers = downstreamWorkers;
+    public Worker(Operator operator) {
+        this.downstreamWorkers = new LinkedList<>();
         this.operator = operator;
     }
 
-    public static Props props(List<ActorRef> downstreamWorkers, Operator operator) {
-        return Props.create(Worker.class, downstreamWorkers, operator);
+    public static Props props(Operator operator) {
+        return Props.create(Worker.class, operator);
     }
 
     @Override
@@ -30,6 +31,10 @@ public class Worker extends AbstractActor {
                 .match(OperateMessage.class, this::onOperateMessage)
                 .match(AddDownstreamMessage.class, this::onAddDownstreamMessage)
                 .build();
+    }
+
+    public void addDownstreamOperator(ActorRef downstreamOperator) {
+        downstreamWorkers.add(downstreamOperator);
     }
 
     private void onOperateMessage(OperateMessage operateMessage) {
