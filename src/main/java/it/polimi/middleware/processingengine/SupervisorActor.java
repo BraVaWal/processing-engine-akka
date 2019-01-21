@@ -4,7 +4,9 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import it.polimi.middleware.processingengine.message.AddDownstreamMessage;
+import it.polimi.middleware.processingengine.message.AddJobMessage;
 import it.polimi.middleware.processingengine.message.AddOperatorMessage;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 import it.polimi.middleware.processingengine.worker.Worker;
 
 import java.util.Collection;
@@ -33,7 +35,14 @@ public class SupervisorActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(AddOperatorMessage.class, this::onAddOperator)
+                .match(AddJobMessage.class, this::onAddJob)
                 .build();
+    }
+
+    private void onAddJob(AddJobMessage message) {
+        for (KeyValuePair pair : message.getData()) {
+            source.tell(new OperateMessage(pair), self());
+        }
     }
 
     private void onAddOperator(AddOperatorMessage message) {

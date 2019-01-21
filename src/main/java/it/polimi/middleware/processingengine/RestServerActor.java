@@ -11,7 +11,6 @@ import spark.Response;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -49,7 +48,8 @@ public class RestServerActor extends AbstractActor {
     }
 
     private Object postJob(Request request, Response response) {
-        Type listType = new TypeToken<ArrayList<KeyValuePair>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<KeyValuePair>>() {
+        }.getType();
         ArrayList<KeyValuePair> data = new Gson().fromJson(request.body(), listType);
         supervisorActor.tell(new AddJobMessage(data), self());
         return data;

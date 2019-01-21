@@ -13,4 +13,11 @@ public class OperateMessage {
     public KeyValuePair getKeyValuePair() {
         return keyValuePair;
     }
+
+    @Override
+    public String toString() {
+        return "OperateMessage{" +
+                "keyValuePair=" + keyValuePair +
+                '}';
+    }
 }
