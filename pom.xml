@@ -20,6 +20,11 @@
             <version>2.5.18</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>2.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -46,7 +51,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        it.polimi.middleware.processingengine.Example
+                                        it.polimi.middleware.processingengine.Application
                                     </mainClass>
                                 </manifest>
                             </archive>

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SinkWorker extends Worker {
     public SinkWorker() {
-        super(new SinkOperator());
+        super("sink", new SinkOperator());
     }
 
     public static Props props() {
