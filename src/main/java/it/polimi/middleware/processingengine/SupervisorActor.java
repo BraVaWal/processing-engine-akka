@@ -24,8 +24,8 @@ public class SupervisorActor extends AbstractActor {
         return Props.create(SupervisorActor.class, source, sink);
     }
 
-    public void addOperator(Operator operator) {
-        ActorRef worker = getContext().actorOf(Worker.props(operator));
+    public void addOperator(String id, Operator operator) {
+        ActorRef worker = getContext().actorOf(Worker.props(id, operator));
         workers.add(worker);
     }
 
