@@ -3,11 +3,10 @@ package it.polimi.middleware.processingengine;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import com.google.gson.Gson;
 import it.polimi.middleware.processingengine.message.AddOperatorMessage;
 import spark.Request;
 import spark.Response;
-
-import java.util.Arrays;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -29,28 +28,32 @@ public class RestServerActor extends AbstractActor {
         get("/status", this::getStatus);
         get("/result", this::getResult);
         post("/operator", this::postOperator);
+        post("/input", this::postInput);
     }
 
     @Override
     public Receive createReceive() {
-        return null;
+        return receiveBuilder().build();
     }
 
     private Object getStatus(Request request, Response response) {
-        return null;
+        return "Status";
     }
 
     private Object getResult(Request request, Response response) {
-        return null;
+        return "Result";
     }
 
     private Object postOperator(Request request, Response response) {
-        supervisorActor.tell(new AddOperatorMessage(
-                request.queryParams("id"),
-                Arrays.asList(request.queryParamsValues("sources")),
-                Arrays.asList(request.queryParamsValues("sinkId")),
-                OperatorType.valueOf(request.queryParams("operatorType"))
-        ), supervisorActor);
+        AddOperatorMessage addOperatorMessage = new Gson().fromJson(request.body(), AddOperatorMessage.class);
+        System.out.println(addOperatorMessage);
+        supervisorActor.tell(addOperatorMessage, supervisorActor);
         return "Operator added";
     }
+
+
+    private Object postInput(Request request, Response response) {
+        return "Input";
+    }
+
 }

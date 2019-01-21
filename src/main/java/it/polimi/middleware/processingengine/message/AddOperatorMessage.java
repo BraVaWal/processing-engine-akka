@@ -33,4 +33,14 @@ public class AddOperatorMessage {
     public List<String> getDownstream() {
         return downstream;
     }
+
+    @Override
+    public String toString() {
+        return "AddOperatorMessage{" +
+                "id='" + id + '\'' +
+                ", sources=" + sources +
+                ", downstream=" + downstream +
+                ", operatorType=" + operatorType +
+                '}';
+    }
 }

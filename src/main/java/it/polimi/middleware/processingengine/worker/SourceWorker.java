@@ -7,7 +7,7 @@ import it.polimi.middleware.processingengine.operator.SplitOperator;
 import java.util.List;
 
 public class SourceWorker extends Worker {
-    public SourceWorker(List<ActorRef> downstreamWorkers) {
+    public SourceWorker() {
         super("source", new SplitOperator());
     }
 
