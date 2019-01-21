@@ -1,5 +1,6 @@
 package it.polimi.middleware.processingengine.operator;
 
+import it.polimi.middleware.processingengine.KeyValuePair;
 import it.polimi.middleware.processingengine.function.FlatMapFunction;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 
@@ -15,9 +16,9 @@ public class FlatMapOperator implements Operator {
 
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
-        Collection<OperateMessage> result = flatMapFunction.flatMap(operateMessage);
-        for (OperateMessage m : result) {
-            listener.onSendDownstream(m);
+        Collection<KeyValuePair> result = flatMapFunction.flatMap(operateMessage.getKeyValuePair());
+        for (KeyValuePair m : result) {
+            listener.onSendDownstream(new OperateMessage(m));
         }
     }
 }
