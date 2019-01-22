@@ -1,16 +1,17 @@
 package it.polimi.middleware.processingengine.message;
 
-import akka.actor.ActorRef;
 import it.polimi.middleware.processingengine.operator.Operator;
 
 import java.util.List;
 
 public class WorkerStatusMessage {
 
+    private final String id;
     private final Operator operator;
-    private final List<ActorRef> downstream;
+    private final List<String> downstream;
 
-    public WorkerStatusMessage(Operator operator, List<ActorRef> downstream) {
+    public WorkerStatusMessage(String id, Operator operator, List<String> downstream) {
+        this.id = id;
         this.operator = operator;
         this.downstream = downstream;
     }
@@ -19,7 +20,7 @@ public class WorkerStatusMessage {
         return operator;
     }
 
-    public List<ActorRef> getDownstream() {
+    public List<String> getDownstream() {
         return downstream;
     }
 }

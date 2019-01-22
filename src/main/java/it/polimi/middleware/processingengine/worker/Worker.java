@@ -11,6 +11,7 @@ import it.polimi.middleware.processingengine.operator.Operator;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Worker extends AbstractActor {
 
@@ -53,7 +54,8 @@ public class Worker extends AbstractActor {
     }
 
     private void onAskStatusMessage(AskStatusMessage askStatusMessage) {
-        sender().tell(new WorkerStatusMessage(operator, downstreamWorkers), self());
+        List<String> downstreamAsString = downstreamWorkers.stream().map(ActorRef::toString).collect(Collectors.toList());
+        sender().tell(new WorkerStatusMessage(self().toString(), operator, downstreamAsString), self());
     }
 
     private void sendDownstream(OperateMessage operateMessage) {

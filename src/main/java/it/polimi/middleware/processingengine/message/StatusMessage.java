@@ -1,10 +1,8 @@
 package it.polimi.middleware.processingengine.message;
 
 import akka.actor.ActorRef;
-import it.polimi.middleware.processingengine.KeyValuePair;
 
 import java.util.Collection;
-import java.util.List;
 
 public class StatusMessage {
 

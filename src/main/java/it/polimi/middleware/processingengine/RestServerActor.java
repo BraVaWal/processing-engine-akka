@@ -49,16 +49,15 @@ public class RestServerActor extends AbstractActor {
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskStatusMessage(), 1000);
 
         StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
-        List<WorkerStatusDTO> workerDTOs = new ArrayList<>(message.getActors().size());
-        
+        List<WorkerStatusMessage> workerStatusMessages = new ArrayList<>(message.getActors().size());
+
         for (ActorRef worker : message.getActors()) {
             final Future<Object> workerReply = Patterns.ask(worker, new AskStatusMessage(), 1000);
             WorkerStatusMessage statusMessage = (WorkerStatusMessage) Await.result(workerReply, Duration.Inf());
-            List<String> downstreamRefs = statusMessage.getDownstream().stream().map(ActorRef::toString).collect(Collectors.toList());
-            workerDTOs.add(new WorkerStatusDTO(sender().toString(), statusMessage.getOperator(), downstreamRefs));
+            workerStatusMessages.add(statusMessage);
         }
 
-        return new Gson().toJson(workerDTOs);
+        return new Gson().toJson(workerStatusMessages);
     }
 
     private Object getResult(Request request, Response response) throws Exception {
