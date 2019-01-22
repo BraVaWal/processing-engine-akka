@@ -1,7 +1,8 @@
 package it.polimi.middleware.processingengine.operator;
 
-import it.polimi.middleware.processingengine.message.OperateMessage;
+import it.polimi.middleware.processingengine.KeyValuePair;
 import it.polimi.middleware.processingengine.function.AggregateFunction;
+import it.polimi.middleware.processingengine.message.OperateMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,15 +27,16 @@ public class AggregateOperator implements Operator {
 
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
-        addToWindow(operateMessage);
-        if (windowIsFull(operateMessage.getKey())) {
-            OperateMessage result = aggregateFunction.aggregate(operateMessage.getKey(), getWindow(operateMessage.getKey()));
+        KeyValuePair pair = operateMessage.getKeyValuePair();
+        addToWindow(pair);
+        if (windowIsFull(pair.getKey())) {
+            OperateMessage result = new OperateMessage(aggregateFunction.aggregate(pair.getKey(), getWindow(pair.getKey())));
             listener.onSendDownstream(result);
-            slideWindow(operateMessage.getKey());
+            slideWindow(pair.getKey());
         }
     }
 
-    private void addToWindow(OperateMessage operateMessage) {
+    private void addToWindow(KeyValuePair operateMessage) {
         getWindow(operateMessage.getKey()).add(operateMessage.getValue());
     }
 

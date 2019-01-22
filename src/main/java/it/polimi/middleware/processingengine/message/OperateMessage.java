@@ -1,25 +1,23 @@
 package it.polimi.middleware.processingengine.message;
 
+import it.polimi.middleware.processingengine.KeyValuePair;
+
 public class OperateMessage {
 
-    private final String key;
-    private final String value;
+    private final KeyValuePair keyValuePair;
 
-    public OperateMessage(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public OperateMessage(KeyValuePair pair) {
+        this.keyValuePair = pair;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
+    public KeyValuePair getKeyValuePair() {
+        return keyValuePair;
     }
 
     @Override
     public String toString() {
-        return "[" + key + "," + value + "]";
+        return "OperateMessage{" +
+                "keyValuePair=" + keyValuePair +
+                '}';
     }
 }
