@@ -4,8 +4,11 @@ import akka.actor.Props;
 import it.polimi.middleware.processingengine.operator.SinkOperator;
 
 public class SinkWorker extends Worker {
+
+    public static final String ID = "sink";
+
     public SinkWorker() {
-        super(new SinkOperator());
+        super(ID, new SinkOperator());
     }
 
     public static Props props() {

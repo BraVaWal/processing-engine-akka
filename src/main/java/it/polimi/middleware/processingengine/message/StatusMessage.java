@@ -6,25 +6,13 @@ import java.util.Collection;
 
 public class StatusMessage {
 
-    private final ActorRef source;
-    private final ActorRef sink;
-    private final Collection<ActorRef> actors;
+    private final Collection<ActorRef> workers;
 
-    public StatusMessage(ActorRef source, ActorRef sink, Collection<ActorRef> actors) {
-        this.source = source;
-        this.sink = sink;
-        this.actors = actors;
+    public StatusMessage(Collection<ActorRef> workers) {
+        this.workers = workers;
     }
 
-    public ActorRef getSource() {
-        return source;
-    }
-
-    public ActorRef getSink() {
-        return sink;
-    }
-
-    public Collection<ActorRef> getActors() {
-        return actors;
+    public Collection<ActorRef> getWorkers() {
+        return workers;
     }
 }

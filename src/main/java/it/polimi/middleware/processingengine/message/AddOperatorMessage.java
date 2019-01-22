@@ -7,23 +7,29 @@ import java.util.List;
 
 public class AddOperatorMessage {
 
-    private final List<ActorRef> sources;
-    private final List<ActorRef> downstream;
+    private final String id;
+    private final List<String> sourceIds;
+    private final List<String> downstreamIds;
     private final Operator operator;
 
 
-    public AddOperatorMessage(List<ActorRef> sources, List<ActorRef> downstream, Operator operator) {
-        this.sources = sources;
-        this.downstream = downstream;
+    public AddOperatorMessage(String id, List<String> sourceIds, List<String> downstreamIds, Operator operator) {
+        this.id = id;
+        this.sourceIds = sourceIds;
+        this.downstreamIds = downstreamIds;
         this.operator = operator;
     }
 
-    public List<ActorRef> getSources() {
-        return sources;
+    public String getId() {
+        return id;
     }
 
-    public List<ActorRef> getDownstream() {
-        return downstream;
+    public List<String> getSourceIds() {
+        return sourceIds;
+    }
+
+    public List<String> getDownstreamIds() {
+        return downstreamIds;
     }
 
     public Operator getOperator() {

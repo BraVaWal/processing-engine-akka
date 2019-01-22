@@ -15,25 +15,28 @@ import java.util.stream.Collectors;
 
 public class Worker extends AbstractActor {
 
+    private final String id;
+
     private final List<ActorRef> downstreamWorkers;
 
     private final Operator operator;
 
-    public Worker(Operator operator) {
-        this(operator, new LinkedList<>());
+    public Worker(String id, Operator operator) {
+        this(id, operator, new LinkedList<>());
     }
 
-    public Worker(Operator operator, List<ActorRef> downstreamWorkers) {
+    public Worker(String id, Operator operator, List<ActorRef> downstreamWorkers) {
+        this.id = id;
         this.downstreamWorkers = downstreamWorkers;
         this.operator = operator;
     }
 
-    public static Props props(Operator operator) {
-        return Props.create(Worker.class, operator);
+    public static Props props(String id, Operator operator) {
+        return Props.create(Worker.class, id, operator);
     }
 
-    public static Props props(Operator operator, List<ActorRef> downstreamWorkers) {
-        return Props.create(Worker.class, operator, downstreamWorkers);
+    public static Props props(String id, Operator operator, List<ActorRef> downstreamWorkers) {
+        return Props.create(Worker.class, id, operator, downstreamWorkers);
     }
 
     @Override
@@ -55,7 +58,7 @@ public class Worker extends AbstractActor {
 
     private void onAskStatusMessage(AskStatusMessage askStatusMessage) {
         List<String> downstreamAsString = downstreamWorkers.stream().map(ActorRef::toString).collect(Collectors.toList());
-        sender().tell(new WorkerStatusMessage(self().toString(), operator, downstreamAsString), self());
+        sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString), self());
     }
 
     private void sendDownstream(OperateMessage operateMessage) {
