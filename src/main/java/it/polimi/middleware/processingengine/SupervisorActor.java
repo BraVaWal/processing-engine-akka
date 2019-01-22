@@ -27,6 +27,14 @@ public class SupervisorActor extends AbstractActor {
         return Props.create(SupervisorActor.class, source, sink);
     }
 
+    public ActorRef getSource() {
+        return source;
+    }
+
+    public ActorRef getSink() {
+        return sink;
+    }
+
     private void addDownstreamOperator(ActorRef sourceWorker, ActorRef downstream) {
         sourceWorker.tell(new AddDownstreamMessage(downstream), self());
     }
@@ -63,7 +71,7 @@ public class SupervisorActor extends AbstractActor {
     }
 
     private void onAskStatus(AskStatusMessage message) {
-        sender().tell(new StatusMessage(workers), self());
+        sender().tell(new StatusMessage(source, sink, workers), self());
     }
 
     private void onAskResult(AskResultMessage message) {

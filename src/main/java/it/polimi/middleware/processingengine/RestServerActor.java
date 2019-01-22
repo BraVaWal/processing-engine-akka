@@ -16,7 +16,6 @@ import spark.Response;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -49,15 +48,20 @@ public class RestServerActor extends AbstractActor {
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskStatusMessage(), 1000);
 
         StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
-        List<WorkerStatusMessage> workerStatusMessages = new ArrayList<>(message.getActors().size());
+        List<WorkerStatusMessage> workerStatusMessages = new ArrayList<>(message.getActors().size() + 2);
 
+        workerStatusMessages.add(askWorkerStatus(message.getSource()));
         for (ActorRef worker : message.getActors()) {
-            final Future<Object> workerReply = Patterns.ask(worker, new AskStatusMessage(), 1000);
-            WorkerStatusMessage statusMessage = (WorkerStatusMessage) Await.result(workerReply, Duration.Inf());
-            workerStatusMessages.add(statusMessage);
+            workerStatusMessages.add(askWorkerStatus(worker));
         }
+        workerStatusMessages.add(askWorkerStatus(message.getSink()));
 
         return new Gson().toJson(workerStatusMessages);
+    }
+
+    private WorkerStatusMessage askWorkerStatus(ActorRef worker) throws Exception {
+        final Future<Object> workerReply = Patterns.ask(worker, new AskStatusMessage(), 1000);
+        return (WorkerStatusMessage) Await.result(workerReply, Duration.Inf());
     }
 
     private Object getResult(Request request, Response response) throws Exception {
