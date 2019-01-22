@@ -4,8 +4,11 @@ import akka.actor.Props;
 import it.polimi.middleware.processingengine.operator.SplitOperator;
 
 public class SourceWorker extends Worker {
+
+    public static final String ID = "source";
+
     public SourceWorker() {
-        super(new SplitOperator());
+        super(ID, new SplitOperator());
     }
 
     public static Props props() {
