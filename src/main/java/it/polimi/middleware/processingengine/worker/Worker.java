@@ -53,7 +53,9 @@ public class Worker extends AbstractActor {
     }
 
     private void onAddDownstreamMessage(AddDownstreamMessage addDownstreamMessage) {
-        downstreamWorkers.add(addDownstreamMessage.getDownstreamOperator());
+        if (!downstreamWorkers.contains(addDownstreamMessage.getDownstreamOperator())) {
+            downstreamWorkers.add(addDownstreamMessage.getDownstreamOperator());
+        }
     }
 
     private void onAskStatusMessage(AskStatusMessage askStatusMessage) {

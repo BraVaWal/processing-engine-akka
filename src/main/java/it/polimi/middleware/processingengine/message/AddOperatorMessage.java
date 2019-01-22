@@ -8,15 +8,15 @@ import java.util.List;
 public class AddOperatorMessage {
 
     private final String id;
-    private final List<String> sourceIds;
-    private final List<String> downstreamIds;
+    private final String sourceId;
+    private final String downstreamId;
     private final Operator operator;
 
 
-    public AddOperatorMessage(String id, List<String> sourceIds, List<String> downstreamIds, Operator operator) {
+    public AddOperatorMessage(String id, String sourceId, String downstreamId, Operator operator) {
         this.id = id;
-        this.sourceIds = sourceIds;
-        this.downstreamIds = downstreamIds;
+        this.sourceId = sourceId;
+        this.downstreamId = downstreamId;
         this.operator = operator;
     }
 
@@ -24,12 +24,12 @@ public class AddOperatorMessage {
         return id;
     }
 
-    public List<String> getSourceIds() {
-        return sourceIds;
+    public String getSourceId() {
+        return sourceId;
     }
 
-    public List<String> getDownstreamIds() {
-        return downstreamIds;
+    public String getDownstreamId() {
+        return downstreamId;
     }
 
     public Operator getOperator() {

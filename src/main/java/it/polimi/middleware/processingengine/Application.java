@@ -8,24 +8,24 @@ import it.polimi.middleware.processingengine.operator.MapOperator;
 import it.polimi.middleware.processingengine.worker.SinkWorker;
 import it.polimi.middleware.processingengine.worker.SourceWorker;
 
-import java.util.Collections;
-
 public class Application {
+
+    public static final int NR_OF_PARTITIONS = 4;
 
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create();
 
         ActorRef sourceWorker = system.actorOf(SourceWorker.props());
         ActorRef sinkWorker = system.actorOf(SinkWorker.props());
-        ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker));
+        ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker, 4));
 
         ActorRef restServerActor = system.actorOf(RestServerActor.props(supervisorActor));
 
-        supervisorActor.tell(new AddOperatorMessage("map", Collections.singletonList("source"),
-                Collections.emptyList(), new MapOperator(keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
+        supervisorActor.tell(new AddOperatorMessage("map", "source",
+                null, new MapOperator(keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
                 keyValuePair.getValue().toUpperCase()))), ActorRef.noSender());
-        supervisorActor.tell(new AddOperatorMessage("aggregate", Collections.singletonList("map"),
-                Collections.singletonList("sink"), new AggregateOperator((key, values) -> {
+        supervisorActor.tell(new AddOperatorMessage("aggregate", "map",
+                "sink", new AggregateOperator((key, values) -> {
             StringBuilder sb = new StringBuilder();
             values.forEach(sb::append);
             return new KeyValuePair(key, sb.toString());
