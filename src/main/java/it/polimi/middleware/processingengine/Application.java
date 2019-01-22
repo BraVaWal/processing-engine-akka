@@ -19,7 +19,11 @@ public class Application {
         ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker));
 
         ActorRef restServerActor = system.actorOf(RestServerActor.props(supervisorActor));
-        
+
+        supervisorActor.tell(new AddOperatorMessage(Collections.singletonList(sourceWorker),
+                        Collections.singletonList(sinkWorker),
+                        new MapOperator(keyValuePair -> new KeyValuePair(keyValuePair.getKey(), keyValuePair.getValue().toUpperCase()))),
+                ActorRef.noSender());
     }
 
 }
