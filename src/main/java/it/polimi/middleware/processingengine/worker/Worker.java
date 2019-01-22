@@ -4,7 +4,9 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import it.polimi.middleware.processingengine.message.AddDownstreamMessage;
+import it.polimi.middleware.processingengine.message.AskStatusMessage;
 import it.polimi.middleware.processingengine.message.OperateMessage;
+import it.polimi.middleware.processingengine.message.WorkerStatusMessage;
 import it.polimi.middleware.processingengine.operator.Operator;
 
 import java.util.LinkedList;
@@ -38,6 +40,7 @@ public class Worker extends AbstractActor {
         return receiveBuilder()
                 .match(OperateMessage.class, this::onOperateMessage)
                 .match(AddDownstreamMessage.class, this::onAddDownstreamMessage)
+                .match(AskStatusMessage.class, this::onAskStatusMessage)
                 .build();
     }
 
@@ -47,6 +50,10 @@ public class Worker extends AbstractActor {
 
     private void onAddDownstreamMessage(AddDownstreamMessage addDownstreamMessage) {
         downstreamWorkers.add(addDownstreamMessage.getDownstreamOperator());
+    }
+
+    private void onAskStatusMessage(AskStatusMessage askStatusMessage) {
+        sender().tell(new WorkerStatusMessage(operator, downstreamWorkers), self());
     }
 
     private void sendDownstream(OperateMessage operateMessage) {
