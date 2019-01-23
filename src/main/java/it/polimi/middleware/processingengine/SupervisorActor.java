@@ -9,22 +9,24 @@ import it.polimi.middleware.processingengine.worker.SourceWorker;
 import it.polimi.middleware.processingengine.worker.Worker;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SupervisorActor extends AbstractActor {
 
-    private final Map<String, ActorRef> workers = new HashMap<>();
+    private final Map<String, List<ActorRef>> workers = new HashMap<>();
 
     private final List<String> results = new LinkedList<>();
 
-    public SupervisorActor(ActorRef source, ActorRef sink) {
-        workers.put(SourceWorker.ID, source);
-        workers.put(SinkWorker.ID, sink);
+    private final int nrOfPartitions;
+
+    public SupervisorActor(ActorRef source, ActorRef sink, int nrOfPartitions) {
+        this.workers.put(SourceWorker.ID, Collections.singletonList(source));
+        this.workers.put(SinkWorker.ID, Collections.singletonList(sink));
+        this.nrOfPartitions = nrOfPartitions;
         addDownstreamOperator(sink, self());
     }
 
-    public static Props props(ActorRef source, ActorRef sink) {
-        return Props.create(SupervisorActor.class, source, sink);
+    public static Props props(ActorRef source, ActorRef sink, int nrOfPartitions) {
+        return Props.create(SupervisorActor.class, source, sink, nrOfPartitions);
     }
 
     private void addDownstreamOperator(ActorRef sourceWorker, ActorRef downstream) {
@@ -32,11 +34,11 @@ public class SupervisorActor extends AbstractActor {
     }
 
     public ActorRef getSource() {
-        return workers.get(SourceWorker.ID);
+        return workers.get(SourceWorker.ID).get(0);
     }
 
     public ActorRef getSink() {
-        return workers.get(SinkWorker.ID);
+        return workers.get(SinkWorker.ID).get(0);
     }
 
     @Override
@@ -57,13 +59,18 @@ public class SupervisorActor extends AbstractActor {
     }
 
     private void onAddOperator(AddOperatorMessage message) {
-        List<ActorRef> sources = message.getSourceIds().stream().map(workers::get).collect(Collectors.toList());
-        List<ActorRef> downstream = message.getDownstreamIds().stream().map(workers::get).collect(Collectors.toList());
-        ActorRef worker = getContext().actorOf(Worker.props(message.getId(), message.getOperator(), downstream));
-        for (ActorRef s : sources) {
-            addDownstreamOperator(s, worker);
+        List<ActorRef> sources = workers.getOrDefault(message.getSourceId(), new LinkedList<>());
+        List<ActorRef> downstream = workers.getOrDefault(message.getDownstreamId(), new LinkedList<>());
+        List<ActorRef> newWorkers = new ArrayList<>(nrOfPartitions);
+        for (int i = 0; i < nrOfPartitions; i++) {
+            ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperatorFactory().build(), downstream));
+            for (ActorRef source : sources) {
+                addDownstreamOperator(source, worker);
+            }
+            newWorkers.add(worker);
         }
-        workers.put(message.getId(), worker);
+        workers.put(message.getId(), newWorkers);
+
     }
 
     private void onOperate(OperateMessage message) {

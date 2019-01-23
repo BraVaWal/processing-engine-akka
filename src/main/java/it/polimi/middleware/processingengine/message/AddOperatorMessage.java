@@ -2,37 +2,38 @@ package it.polimi.middleware.processingengine.message;
 
 import akka.actor.ActorRef;
 import it.polimi.middleware.processingengine.operator.Operator;
+import it.polimi.middleware.processingengine.operator.factory.OperatorFactory;
 
 import java.util.List;
 
 public class AddOperatorMessage {
 
     private final String id;
-    private final List<String> sourceIds;
-    private final List<String> downstreamIds;
-    private final Operator operator;
+    private final String sourceId;
+    private final String downstreamId;
+    private final OperatorFactory operatorFactory;
 
 
-    public AddOperatorMessage(String id, List<String> sourceIds, List<String> downstreamIds, Operator operator) {
+    public AddOperatorMessage(String id, String sourceId, String downstreamId, OperatorFactory operatorFactory) {
         this.id = id;
-        this.sourceIds = sourceIds;
-        this.downstreamIds = downstreamIds;
-        this.operator = operator;
+        this.sourceId = sourceId;
+        this.downstreamId = downstreamId;
+        this.operatorFactory = operatorFactory;
     }
 
     public String getId() {
         return id;
     }
 
-    public List<String> getSourceIds() {
-        return sourceIds;
+    public String getSourceId() {
+        return sourceId;
     }
 
-    public List<String> getDownstreamIds() {
-        return downstreamIds;
+    public String getDownstreamId() {
+        return downstreamId;
     }
 
-    public Operator getOperator() {
-        return operator;
+    public OperatorFactory getOperatorFactory() {
+        return operatorFactory;
     }
 }

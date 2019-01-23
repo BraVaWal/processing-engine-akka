@@ -15,6 +15,8 @@ import spark.Response;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import static spark.Spark.get;
@@ -48,10 +50,14 @@ public class RestServerActor extends AbstractActor {
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskStatusMessage(), 1000);
 
         StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
-        List<WorkerStatusMessage> workerStatusMessages = new ArrayList<>(message.getWorkers().size());
+        List<List<WorkerStatusMessage>> workerStatusMessages = new ArrayList<>(message.getWorkers().size());
 
-        for (ActorRef worker : message.getWorkers()) {
-            workerStatusMessages.add(askWorkerStatus(worker));
+        for (List<ActorRef> workers : message.getWorkers()) {
+            List<WorkerStatusMessage> result = new LinkedList<>();
+            for (ActorRef worker : workers) {
+                result.add(askWorkerStatus(worker));
+            }
+            workerStatusMessages.add(result);
         }
 
         return new Gson().toJson(workerStatusMessages);
