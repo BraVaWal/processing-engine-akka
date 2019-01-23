@@ -2,11 +2,17 @@ package it.polimi.middleware.processingengine;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import it.polimi.middleware.processingengine.function.AggregateFunction;
 import it.polimi.middleware.processingengine.message.AddOperatorMessage;
 import it.polimi.middleware.processingengine.operator.AggregateOperator;
 import it.polimi.middleware.processingengine.operator.MapOperator;
+import it.polimi.middleware.processingengine.operator.factory.AggregateOperatorFactory;
+import it.polimi.middleware.processingengine.operator.factory.MapOperatorFactory;
+import it.polimi.middleware.processingengine.operator.factory.OperatorFactory;
 import it.polimi.middleware.processingengine.worker.SinkWorker;
 import it.polimi.middleware.processingengine.worker.SourceWorker;
+
+import java.util.Collection;
 
 public class Application {
 
@@ -17,19 +23,23 @@ public class Application {
 
         ActorRef sourceWorker = system.actorOf(SourceWorker.props());
         ActorRef sinkWorker = system.actorOf(SinkWorker.props());
-        ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker, 4));
+        ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker, NR_OF_PARTITIONS));
 
         ActorRef restServerActor = system.actorOf(RestServerActor.props(supervisorActor));
 
-        supervisorActor.tell(new AddOperatorMessage("map", "source",
-                null, new MapOperator(keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
-                keyValuePair.getValue().toUpperCase()))), ActorRef.noSender());
-        supervisorActor.tell(new AddOperatorMessage("aggregate", "map",
-                "sink", new AggregateOperator((key, values) -> {
+        OperatorFactory mapOperatorFactory = new MapOperatorFactory(keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
+                keyValuePair.getValue().toUpperCase()));
+
+        OperatorFactory aggregateOperatorFactory = new AggregateOperatorFactory((key, values) -> {
             StringBuilder sb = new StringBuilder();
             values.forEach(sb::append);
             return new KeyValuePair(key, sb.toString());
-        }, 3, 3)), ActorRef.noSender());
+        }, 3, 3);
+
+        supervisorActor.tell(new AddOperatorMessage("map", "source",
+                null, mapOperatorFactory), ActorRef.noSender());
+        supervisorActor.tell(new AddOperatorMessage("aggregate", "map",
+                "sink", aggregateOperatorFactory), ActorRef.noSender());
     }
 
 }

@@ -63,7 +63,7 @@ public class SupervisorActor extends AbstractActor {
         List<ActorRef> downstream = workers.getOrDefault(message.getDownstreamId(), new LinkedList<>());
         List<ActorRef> newWorkers = new ArrayList<>(nrOfPartitions);
         for (int i = 0; i < nrOfPartitions; i++) {
-            ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperator(), downstream));
+            ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperatorFactory().build(), downstream));
             for (ActorRef source : sources) {
                 addDownstreamOperator(source, worker);
             }

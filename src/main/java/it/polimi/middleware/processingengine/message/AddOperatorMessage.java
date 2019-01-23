@@ -2,6 +2,7 @@ package it.polimi.middleware.processingengine.message;
 
 import akka.actor.ActorRef;
 import it.polimi.middleware.processingengine.operator.Operator;
+import it.polimi.middleware.processingengine.operator.factory.OperatorFactory;
 
 import java.util.List;
 
@@ -10,14 +11,14 @@ public class AddOperatorMessage {
     private final String id;
     private final String sourceId;
     private final String downstreamId;
-    private final Operator operator;
+    private final OperatorFactory operatorFactory;
 
 
-    public AddOperatorMessage(String id, String sourceId, String downstreamId, Operator operator) {
+    public AddOperatorMessage(String id, String sourceId, String downstreamId, OperatorFactory operatorFactory) {
         this.id = id;
         this.sourceId = sourceId;
         this.downstreamId = downstreamId;
-        this.operator = operator;
+        this.operatorFactory = operatorFactory;
     }
 
     public String getId() {
@@ -32,7 +33,7 @@ public class AddOperatorMessage {
         return downstreamId;
     }
 
-    public Operator getOperator() {
-        return operator;
+    public OperatorFactory getOperatorFactory() {
+        return operatorFactory;
     }
 }
