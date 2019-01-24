@@ -16,7 +16,7 @@ public class FlatMapOperator implements Operator {
 
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
-        Collection<KeyValuePair> result = flatMapFunction.flatMap(operateMessage.getKeyValuePair());
+        final Collection<KeyValuePair> result = flatMapFunction.flatMap(operateMessage.getKeyValuePair());
         for (KeyValuePair m : result) {
             listener.onSendDownstream(new OperateMessage(m));
         }

@@ -1,10 +1,6 @@
 package it.polimi.middleware.processingengine.message;
 
-import akka.actor.ActorRef;
-import it.polimi.middleware.processingengine.operator.Operator;
 import it.polimi.middleware.processingengine.operator.factory.OperatorFactory;
-
-import java.util.List;
 
 public class AddOperatorMessage {
 

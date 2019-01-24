@@ -13,7 +13,6 @@ public class FilterOperator implements Operator {
         this.predicate = predicate;
     }
 
-
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
         if (predicate.test(operateMessage.getKeyValuePair())) {

@@ -10,14 +10,12 @@ public class CrashOperator implements Operator {
 
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
-
         if (operateMessage.getKeyValuePair().getValue().equalsIgnoreCase("crash")) {
             if (Math.random() < crashingChance) {
                 crashCount++;
                 throw new RuntimeException("crash");
             }
         }
-
         listener.onSendDownstream(operateMessage);
     }
 }

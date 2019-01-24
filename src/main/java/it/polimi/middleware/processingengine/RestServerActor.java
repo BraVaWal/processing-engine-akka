@@ -15,7 +15,6 @@ import spark.Response;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,11 +50,11 @@ public class RestServerActor extends AbstractActor {
 
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskStatusMessage(), 1000);
 
-        StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
-        List<List<WorkerStatusMessage>> workerStatusMessages = new ArrayList<>(message.getWorkers().size());
+        final StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
+        final List<List<WorkerStatusMessage>> workerStatusMessages = new ArrayList<>(message.getWorkers().size());
 
         for (List<ActorRef> workers : message.getWorkers()) {
-            List<WorkerStatusMessage> result = new LinkedList<>();
+            final List<WorkerStatusMessage> result = new LinkedList<>();
             for (ActorRef worker : workers) {
                 result.add(askWorkerStatus(worker));
             }
@@ -74,15 +73,15 @@ public class RestServerActor extends AbstractActor {
         response.type("application/json");
 
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskResultMessage(), 1000);
-        ResultMessage message = (ResultMessage) Await.result(reply, Duration.Inf());
+        final ResultMessage message = (ResultMessage) Await.result(reply, Duration.Inf());
         return new Gson().toJson(message.getResults());
 
     }
 
     private Object postJob(Request request, Response response) {
-        Type listType = new TypeToken<ArrayList<KeyValuePair>>() {
+        final Type listType = new TypeToken<ArrayList<KeyValuePair>>() {
         }.getType();
-        ArrayList<KeyValuePair> data = new Gson().fromJson(request.body(), listType);
+        final ArrayList<KeyValuePair> data = new Gson().fromJson(request.body(), listType);
         supervisorActor.tell(new AddJobMessage(data), self());
         return data;
     }

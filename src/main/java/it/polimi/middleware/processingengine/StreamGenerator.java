@@ -5,6 +5,7 @@ import it.polimi.middleware.processingengine.message.OperateMessage;
 
 import java.util.Random;
 
+@Deprecated
 public class StreamGenerator implements Runnable {
 
     private final ActorRef downstream;
