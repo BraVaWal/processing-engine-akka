@@ -44,7 +44,10 @@ public class SupervisorActor extends AbstractActor {
                 10,
                 Duration.create("10 seconds"),
                 DeciderBuilder
-                        .match(RuntimeException.class, ex -> SupervisorStrategy.restart())
+                        .match(OperatorCrashException.class, ex -> SupervisorStrategy.restart())
+                        .match(SendWithAcknowledgeException.class, ex -> SupervisorStrategy.restart())
+                        .match(IllegalStateException.class, ex -> SupervisorStrategy.escalate())
+                        .matchAny(o -> SupervisorStrategy.escalate())
                         .build());
     }
 

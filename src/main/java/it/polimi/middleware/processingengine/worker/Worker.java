@@ -4,6 +4,7 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.pattern.Patterns;
+import it.polimi.middleware.processingengine.SendWithAcknowledgeException;
 import it.polimi.middleware.processingengine.message.*;
 import it.polimi.middleware.processingengine.operator.Operator;
 import scala.concurrent.Await;
@@ -114,7 +115,7 @@ public class Worker extends AbstractActor {
             } catch (Exception e) {
                 triesLeft--;
                 if (triesLeft == 0) {
-                    throw new RuntimeException("Max resend exceeded!");
+                    throw new SendWithAcknowledgeException("Max retries exceeded");
                 }
             }
         }
