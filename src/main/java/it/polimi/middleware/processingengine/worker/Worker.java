@@ -26,7 +26,7 @@ public class Worker extends AbstractActor {
     private final List<ActorRef> downstreamWorkers;
     private final Operator operator;
 
-    private Queue<UUID> operated = new LinkedList<>();
+    private final Queue<UUID> operated = new LinkedList<>();
     private OperateMessage lastReceivedNotOperated;
     private OperateMessage lastReceivedOperated;
 
@@ -73,6 +73,7 @@ public class Worker extends AbstractActor {
             }
             lastReceivedNotOperated = operateMessage;
             operate(operateMessage);
+            lastReceivedNotOperated = null;
             sender().tell(new AcknowledgeMessage(operateMessage.getId()), self());
         } else {
             sender().tell(new AcknowledgeMessage(operateMessage.getId()), self());
@@ -87,7 +88,7 @@ public class Worker extends AbstractActor {
 
     private void onAskStatusMessage(AskStatusMessage askStatusMessage) {
         List<String> downstreamAsString = downstreamWorkers.stream().map(ActorRef::toString).collect(Collectors.toList());
-        sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString), self());
+        sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString, operated, lastReceivedNotOperated, lastReceivedOperated), self());
     }
 
     private void operate(OperateMessage operateMessage) {
