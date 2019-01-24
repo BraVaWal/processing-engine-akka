@@ -47,6 +47,8 @@ public class RestServerActor extends AbstractActor {
     }
 
     private Object getStatus(Request request, Response response) throws Exception {
+        response.type("application/json");
+
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskStatusMessage(), 1000);
 
         StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
@@ -69,6 +71,8 @@ public class RestServerActor extends AbstractActor {
     }
 
     private Object getResult(Request request, Response response) throws Exception {
+        response.type("application/json");
+
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskResultMessage(), 1000);
         ResultMessage message = (ResultMessage) Await.result(reply, Duration.Inf());
         return new Gson().toJson(message.getResults());

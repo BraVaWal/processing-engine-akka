@@ -7,6 +7,7 @@ import it.polimi.middleware.processingengine.message.AddOperatorMessage;
 import it.polimi.middleware.processingengine.operator.AggregateOperator;
 import it.polimi.middleware.processingengine.operator.MapOperator;
 import it.polimi.middleware.processingengine.operator.factory.AggregateOperatorFactory;
+import it.polimi.middleware.processingengine.operator.factory.CrashOperatorFactory;
 import it.polimi.middleware.processingengine.operator.factory.MapOperatorFactory;
 import it.polimi.middleware.processingengine.operator.factory.OperatorFactory;
 import it.polimi.middleware.processingengine.worker.SinkWorker;
@@ -16,7 +17,7 @@ import java.util.Collection;
 
 public class Application {
 
-    public static final int NR_OF_PARTITIONS = 4;
+    public static final int NR_OF_PARTITIONS = 1;
 
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create();
@@ -30,6 +31,8 @@ public class Application {
         OperatorFactory mapOperatorFactory = new MapOperatorFactory(keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
                 keyValuePair.getValue().toUpperCase()));
 
+        OperatorFactory crashOperatorFactory = new CrashOperatorFactory();
+
         OperatorFactory aggregateOperatorFactory = new AggregateOperatorFactory((key, values) -> {
             StringBuilder sb = new StringBuilder();
             values.forEach(sb::append);
@@ -38,7 +41,9 @@ public class Application {
 
         supervisorActor.tell(new AddOperatorMessage("map", "source",
                 null, mapOperatorFactory), ActorRef.noSender());
-        supervisorActor.tell(new AddOperatorMessage("aggregate", "map",
+        supervisorActor.tell(new AddOperatorMessage("crash", "map",
+                null, crashOperatorFactory), ActorRef.noSender());
+        supervisorActor.tell(new AddOperatorMessage("aggregate", "crash",
                 "sink", aggregateOperatorFactory), ActorRef.noSender());
     }
 

@@ -1,12 +1,12 @@
 package it.polimi.middleware.processingengine;
 
-import akka.actor.AbstractActor;
-import akka.actor.ActorRef;
-import akka.actor.Props;
+import akka.actor.*;
+import akka.japi.pf.DeciderBuilder;
 import it.polimi.middleware.processingengine.message.*;
 import it.polimi.middleware.processingengine.worker.SinkWorker;
 import it.polimi.middleware.processingengine.worker.SourceWorker;
 import it.polimi.middleware.processingengine.worker.Worker;
+import scala.concurrent.duration.Duration;
 
 import java.util.*;
 
@@ -29,16 +29,26 @@ public class SupervisorActor extends AbstractActor {
         return Props.create(SupervisorActor.class, source, sink, nrOfPartitions);
     }
 
-    private void addDownstreamOperator(ActorRef sourceWorker, ActorRef downstream) {
-        sourceWorker.tell(new AddDownstreamMessage(downstream), self());
-    }
-
     public ActorRef getSource() {
         return workers.get(SourceWorker.ID).get(0);
     }
 
     public ActorRef getSink() {
         return workers.get(SinkWorker.ID).get(0);
+    }
+
+    private void addDownstreamOperator(ActorRef sourceWorker, ActorRef downstream) {
+        sourceWorker.tell(new AddDownstreamMessage(downstream), self());
+    }
+
+    @Override
+    public SupervisorStrategy supervisorStrategy() {
+        return new OneForOneStrategy(//
+                10, //
+                Duration.create("10 seconds"), //
+                DeciderBuilder //
+                        .match(RuntimeException.class, ex -> SupervisorStrategy.restart()) //
+                        .build());
     }
 
     @Override
