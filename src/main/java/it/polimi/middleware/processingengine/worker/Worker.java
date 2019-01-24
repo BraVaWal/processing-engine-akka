@@ -68,7 +68,7 @@ public class Worker extends AbstractActor {
 
     private void onOperateMessage(OperateMessage operateMessage) {
         if (!operated.contains(operateMessage.getId())) {
-            if (lastReceivedNotOperated != null) {
+            if (lastReceivedNotOperated != null && lastReceivedNotOperated != operateMessage) {
                 throw new IllegalStateException("Still handling older message!!!");
             }
             lastReceivedNotOperated = operateMessage;
