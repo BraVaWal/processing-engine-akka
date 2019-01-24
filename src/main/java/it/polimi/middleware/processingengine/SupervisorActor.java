@@ -40,11 +40,11 @@ public class SupervisorActor extends AbstractActor {
 
     @Override
     public SupervisorStrategy supervisorStrategy() {
-        return new OneForOneStrategy(//
-                10, //
-                Duration.create("10 seconds"), //
-                DeciderBuilder //
-                        .match(RuntimeException.class, ex -> SupervisorStrategy.restart()) //
+        return new OneForOneStrategy(
+                10,
+                Duration.create("10 seconds"),
+                DeciderBuilder
+                        .match(RuntimeException.class, ex -> SupervisorStrategy.restart())
                         .build());
     }
 
@@ -66,11 +66,11 @@ public class SupervisorActor extends AbstractActor {
     }
 
     private void onAddOperator(AddOperatorMessage message) {
-        List<ActorRef> sources = workers.getOrDefault(message.getSourceId(), new LinkedList<>());
-        List<ActorRef> downstream = workers.getOrDefault(message.getDownstreamId(), new LinkedList<>());
-        List<ActorRef> newWorkers = new ArrayList<>(message.getPartitions());
+        final List<ActorRef> sources = workers.getOrDefault(message.getSourceId(), new LinkedList<>());
+        final List<ActorRef> downstream = workers.getOrDefault(message.getDownstreamId(), new LinkedList<>());
+        final List<ActorRef> newWorkers = new ArrayList<>(message.getPartitions());
         for (int i = 0; i < message.getPartitions(); i++) {
-            ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperatorFactory().build(), downstream));
+            final ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperatorFactory().build(), downstream));
             for (ActorRef source : sources) {
                 addDownstreamOperator(source, worker);
             }

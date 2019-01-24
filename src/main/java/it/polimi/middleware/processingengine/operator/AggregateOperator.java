@@ -27,10 +27,10 @@ public class AggregateOperator implements Operator {
 
     @Override
     public void operate(OperateMessage operateMessage, SendDownStreamListener listener) {
-        KeyValuePair pair = operateMessage.getKeyValuePair();
+        final KeyValuePair pair = operateMessage.getKeyValuePair();
         addToWindow(pair);
         if (windowIsFull(pair.getKey())) {
-            OperateMessage result = new OperateMessage(aggregateFunction.aggregate(pair.getKey(), getWindow(pair.getKey())));
+            final OperateMessage result = new OperateMessage(aggregateFunction.aggregate(pair.getKey(), getWindow(pair.getKey())));
             listener.onSendDownstream(result);
             slideWindow(pair.getKey());
         }

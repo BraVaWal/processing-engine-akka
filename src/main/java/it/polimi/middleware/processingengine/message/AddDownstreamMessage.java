@@ -6,7 +6,6 @@ public class AddDownstreamMessage {
 
     private final ActorRef downstreamOperator;
 
-
     public AddDownstreamMessage(ActorRef downstreamOperator) {
         this.downstreamOperator = downstreamOperator;
     }

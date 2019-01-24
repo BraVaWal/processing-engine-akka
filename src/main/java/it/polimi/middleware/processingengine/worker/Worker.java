@@ -87,7 +87,7 @@ public class Worker extends AbstractActor {
     }
 
     private void onAskStatusMessage(AskStatusMessage askStatusMessage) {
-        List<String> downstreamAsString = downstreamWorkers.stream().map(ActorRef::toString).collect(Collectors.toList());
+        final List<String> downstreamAsString = downstreamWorkers.stream().map(ActorRef::toString).collect(Collectors.toList());
         sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString, operated, lastReceivedNotOperated, lastReceivedOperated), self());
     }
 
@@ -102,7 +102,7 @@ public class Worker extends AbstractActor {
     private void sendDownstream(OperateMessage operateMessage) {
         lastReceivedNotOperated = null;
         lastReceivedOperated = operateMessage;
-        int receiver = operateMessage.getKeyValuePair().getKey().hashCode() % downstreamWorkers.size();
+        final int receiver = operateMessage.getKeyValuePair().getKey().hashCode() % downstreamWorkers.size();
         int triesLeft = MAX_SEND_TRIES;
         while (triesLeft > 0) {
             try {
