@@ -16,17 +16,14 @@ public class SupervisorActor extends AbstractActor {
 
     private final List<String> results = new LinkedList<>();
 
-    private final int nrOfPartitions;
-
-    public SupervisorActor(ActorRef source, ActorRef sink, int nrOfPartitions) {
+    public SupervisorActor(ActorRef source, ActorRef sink) {
         this.workers.put(SourceWorker.ID, Collections.singletonList(source));
         this.workers.put(SinkWorker.ID, Collections.singletonList(sink));
-        this.nrOfPartitions = nrOfPartitions;
         addDownstreamOperator(sink, self());
     }
 
-    public static Props props(ActorRef source, ActorRef sink, int nrOfPartitions) {
-        return Props.create(SupervisorActor.class, source, sink, nrOfPartitions);
+    public static Props props(ActorRef source, ActorRef sink) {
+        return Props.create(SupervisorActor.class, source, sink);
     }
 
     public ActorRef getSource() {
@@ -71,8 +68,8 @@ public class SupervisorActor extends AbstractActor {
     private void onAddOperator(AddOperatorMessage message) {
         List<ActorRef> sources = workers.getOrDefault(message.getSourceId(), new LinkedList<>());
         List<ActorRef> downstream = workers.getOrDefault(message.getDownstreamId(), new LinkedList<>());
-        List<ActorRef> newWorkers = new ArrayList<>(nrOfPartitions);
-        for (int i = 0; i < nrOfPartitions; i++) {
+        List<ActorRef> newWorkers = new ArrayList<>(message.getPartitions());
+        for (int i = 0; i < message.getPartitions(); i++) {
             ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperatorFactory().build(), downstream));
             for (ActorRef source : sources) {
                 addDownstreamOperator(source, worker);
@@ -84,8 +81,9 @@ public class SupervisorActor extends AbstractActor {
     }
 
     private void onOperate(OperateMessage message) {
-        if (getSender().equals(getSink()) && message.getKeyValuePair().getKey().equals("Result")) {
+        if (message.getKeyValuePair().getKey().equals("Result")) {
             results.add(message.getKeyValuePair().getValue());
+            sender().tell(new AcknowledgeMessage(message.getId()), self());
         }
     }
 

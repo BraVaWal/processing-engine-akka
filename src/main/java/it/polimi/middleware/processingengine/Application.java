@@ -17,14 +17,12 @@ import java.util.Collection;
 
 public class Application {
 
-    public static final int NR_OF_PARTITIONS = 1;
-
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create();
 
         ActorRef sourceWorker = system.actorOf(SourceWorker.props());
         ActorRef sinkWorker = system.actorOf(SinkWorker.props());
-        ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker, NR_OF_PARTITIONS));
+        ActorRef supervisorActor = system.actorOf(SupervisorActor.props(sourceWorker, sinkWorker));
 
         ActorRef restServerActor = system.actorOf(RestServerActor.props(supervisorActor));
 
@@ -40,11 +38,11 @@ public class Application {
         }, 3, 3);
 
         supervisorActor.tell(new AddOperatorMessage("map", "source",
-                null, mapOperatorFactory), ActorRef.noSender());
+                null, mapOperatorFactory, 1), ActorRef.noSender());
         supervisorActor.tell(new AddOperatorMessage("crash", "map",
-                null, crashOperatorFactory), ActorRef.noSender());
+                null, crashOperatorFactory, 1), ActorRef.noSender());
         supervisorActor.tell(new AddOperatorMessage("aggregate", "crash",
-                "sink", aggregateOperatorFactory), ActorRef.noSender());
+                "sink", aggregateOperatorFactory, 1), ActorRef.noSender());
     }
 
 }
