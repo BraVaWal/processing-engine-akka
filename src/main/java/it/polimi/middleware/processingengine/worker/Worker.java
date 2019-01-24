@@ -26,8 +26,9 @@ public class Worker extends AbstractActor {
     private final List<ActorRef> downstreamWorkers;
     private final Operator operator;
 
-    private Queue<UUID> messagesReceived = new LinkedList<>();
-    private OperateMessage lastReceived;
+    private Queue<UUID> operated = new LinkedList<>();
+    private OperateMessage lastReceivedNotOperated;
+    private OperateMessage lastReceivedOperated;
 
     public Worker(String id, Operator operator) {
         this(id, operator, new LinkedList<>());
@@ -48,6 +49,15 @@ public class Worker extends AbstractActor {
     }
 
     @Override
+    public void postRestart(Throwable reason) throws Exception {
+        if (lastReceivedNotOperated != null) {
+            operate(lastReceivedNotOperated);
+        } else if (lastReceivedOperated != null) {
+            sendDownstream(lastReceivedOperated);
+        }
+    }
+
+    @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(OperateMessage.class, this::onOperateMessage)
@@ -57,18 +67,13 @@ public class Worker extends AbstractActor {
     }
 
     private void onOperateMessage(OperateMessage operateMessage) {
-        if (!messagesReceived.contains(operateMessage.getId())) {
-            if (lastReceived != null) {
+        if (!operated.contains(operateMessage.getId())) {
+            if (lastReceivedNotOperated != null) {
                 throw new IllegalStateException("Still handling older message!!!");
             }
-            lastReceived = operateMessage;
+            lastReceivedNotOperated = operateMessage;
+            operate(operateMessage);
             sender().tell(new AcknowledgeMessage(operateMessage.getId()), self());
-
-            operator.operate(operateMessage, this::sendDownstream);
-            if (messagesReceived.size() > MAX_LAST_MESSAGES_STORED) {
-                messagesReceived.poll();
-            }
-            messagesReceived.add(operateMessage.getId());
         } else {
             sender().tell(new AcknowledgeMessage(operateMessage.getId()), self());
         }
@@ -85,13 +90,25 @@ public class Worker extends AbstractActor {
         sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString), self());
     }
 
+    private void operate(OperateMessage operateMessage) {
+        operator.operate(operateMessage, this::sendDownstream);
+        if (operated.size() > MAX_LAST_MESSAGES_STORED) {
+            operated.poll();
+        }
+        operated.add(operateMessage.getId());
+    }
+
     private void sendDownstream(OperateMessage operateMessage) {
+        lastReceivedNotOperated = null;
+        lastReceivedOperated = operateMessage;
         int receiver = operateMessage.getKeyValuePair().getKey().hashCode() % downstreamWorkers.size();
         int triesLeft = MAX_SEND_TRIES;
         while (triesLeft > 0) {
             try {
-                sendOperateMessage(downstreamWorkers.get(receiver), operateMessage);
-                lastReceived = null;
+                AcknowledgeMessage ack = sendOperateMessage(downstreamWorkers.get(receiver), operateMessage);
+                if (ack.getId().equals(operateMessage.getId())) {
+                    lastReceivedOperated = null;
+                }
                 triesLeft = 0;
             } catch (Exception e) {
                 triesLeft--;
