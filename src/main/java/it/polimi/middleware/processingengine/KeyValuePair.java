@@ -1,6 +1,8 @@
 package it.polimi.middleware.processingengine;
 
-public class KeyValuePair {
+import java.io.Serializable;
+
+public class KeyValuePair implements Serializable {
 
     private final String key;
     private final String value;

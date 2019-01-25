@@ -4,9 +4,10 @@ import it.polimi.middleware.processingengine.KeyValuePair;
 import it.polimi.middleware.processingengine.operator.FilterOperator;
 import it.polimi.middleware.processingengine.operator.Operator;
 
+import java.io.Serializable;
 import java.util.function.Predicate;
 
-public class FilterOperatorFactory implements OperatorFactory {
+public class FilterOperatorFactory implements OperatorFactory, Serializable {
 
     private final Predicate<KeyValuePair> predicate;
 

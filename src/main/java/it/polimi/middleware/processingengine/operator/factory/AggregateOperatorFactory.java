@@ -4,7 +4,9 @@ import it.polimi.middleware.processingengine.function.AggregateFunction;
 import it.polimi.middleware.processingengine.operator.AggregateOperator;
 import it.polimi.middleware.processingengine.operator.Operator;
 
-public class AggregateOperatorFactory implements OperatorFactory {
+import java.io.Serializable;
+
+public class AggregateOperatorFactory implements OperatorFactory, Serializable {
 
     private final AggregateFunction function;
     private final int windowSize;

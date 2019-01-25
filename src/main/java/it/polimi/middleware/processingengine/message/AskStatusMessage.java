@@ -1,4 +1,6 @@
 package it.polimi.middleware.processingengine.message;
 
-public class AskStatusMessage {
+import java.io.Serializable;
+
+public class AskStatusMessage implements Serializable {
 }

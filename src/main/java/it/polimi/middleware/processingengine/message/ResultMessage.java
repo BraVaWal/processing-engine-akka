@@ -1,8 +1,9 @@
 package it.polimi.middleware.processingengine.message;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ResultMessage {
+public class ResultMessage implements Serializable {
 
     private final List<String> results;
 

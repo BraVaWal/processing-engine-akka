@@ -2,7 +2,9 @@ package it.polimi.middleware.processingengine.message;
 
 import akka.actor.ActorRef;
 
-public class AddDownstreamMessage {
+import java.io.Serializable;
+
+public class AddDownstreamMessage implements Serializable {
 
     private final ActorRef downstreamOperator;
 
