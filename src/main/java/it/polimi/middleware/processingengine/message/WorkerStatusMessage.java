@@ -2,11 +2,12 @@ package it.polimi.middleware.processingengine.message;
 
 import it.polimi.middleware.processingengine.operator.Operator;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 
-public class WorkerStatusMessage {
+public class WorkerStatusMessage implements Serializable {
 
     private final String id;
     private final Operator operator;

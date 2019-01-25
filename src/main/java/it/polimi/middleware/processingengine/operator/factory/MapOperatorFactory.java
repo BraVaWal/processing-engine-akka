@@ -4,7 +4,9 @@ import it.polimi.middleware.processingengine.function.MapFunction;
 import it.polimi.middleware.processingengine.operator.MapOperator;
 import it.polimi.middleware.processingengine.operator.Operator;
 
-public class MapOperatorFactory implements OperatorFactory {
+import java.io.Serializable;
+
+public class MapOperatorFactory implements OperatorFactory, Serializable {
 
     private final MapFunction function;
 

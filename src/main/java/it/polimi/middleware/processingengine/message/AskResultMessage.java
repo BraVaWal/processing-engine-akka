@@ -1,4 +1,6 @@
 package it.polimi.middleware.processingengine.message;
 
-public class AskResultMessage {
+import java.io.Serializable;
+
+public class AskResultMessage implements Serializable {
 }

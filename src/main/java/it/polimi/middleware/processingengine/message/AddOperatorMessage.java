@@ -2,7 +2,9 @@ package it.polimi.middleware.processingengine.message;
 
 import it.polimi.middleware.processingengine.operator.factory.OperatorFactory;
 
-public class AddOperatorMessage {
+import java.io.Serializable;
+
+public class AddOperatorMessage implements Serializable {
 
     private final String id;
     private final String sourceId;

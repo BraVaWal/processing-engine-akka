@@ -4,7 +4,9 @@ import it.polimi.middleware.processingengine.function.FlatMapFunction;
 import it.polimi.middleware.processingengine.operator.FlatMapOperator;
 import it.polimi.middleware.processingengine.operator.Operator;
 
-public class FlatMapOperatorFactory implements OperatorFactory {
+import java.io.Serializable;
+
+public class FlatMapOperatorFactory implements OperatorFactory, Serializable {
 
     private final FlatMapFunction function;
 
