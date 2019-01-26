@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 public class RemoteApplication {
 
-    public static final String REMOTE_IP = "127.0.0.1";
+    public static final String REMOTE_IP = "192.168.1.143";
     public static final String REMOTE_PORT = "2552";
 
     public static void main(String[] args) {
@@ -28,7 +28,7 @@ public class RemoteApplication {
         final Config config = ConfigFactory.parseFile(configFile);
         final ActorSystem system = ActorSystem.create("Remote", config);
 
-        ActorSelection supervisorActor = system.actorSelection("akka.tcp://Main@127.0.0.1:2552/user/SupervisorActor");
+        ActorSelection supervisorActor = system.actorSelection("akka.tcp://Main@"+REMOTE_IP + ":" + REMOTE_PORT + "/user/SupervisorActor");
 
         final OperatorFactory mapOperatorFactory = new MapOperatorFactory((MapFunction & Serializable) keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
                 keyValuePair.getValue().toUpperCase()));
