@@ -15,6 +15,7 @@ import spark.Response;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,17 +52,21 @@ public class RestServerActor extends AbstractActor {
         final Future<Object> reply = Patterns.ask(supervisorActor, new AskStatusMessage(), 1000);
 
         final StatusMessage message = (StatusMessage) Await.result(reply, Duration.Inf());
-        final List<List<WorkerStatusMessage>> workerStatusMessages = new ArrayList<>(message.getWorkers().size());
-
-        for (List<ActorRef> workers : message.getWorkers()) {
-            final List<WorkerStatusMessage> result = new LinkedList<>();
-            for (ActorRef worker : workers) {
-                result.add(askWorkerStatus(worker));
+        final List<List<WorkerStatusMessage>> workerStatusMessages = new ArrayList<>(message.getClientManagers().size());
+        for (ActorRef clientManager : message.getClientManagers()) {
+            final ClientStatusMessage clientStatusMessage = askClientStatus(clientManager);
+            final List<WorkerStatusMessage> clientWorkerMessages = new ArrayList<>(clientStatusMessage.getWorkers().size());
+            for (ActorRef worker : clientStatusMessage.getWorkers()) {
+                clientWorkerMessages.add(askWorkerStatus(worker));
             }
-            workerStatusMessages.add(result);
+            workerStatusMessages.add(clientWorkerMessages);
         }
-
         return new Gson().toJson(workerStatusMessages);
+    }
+
+    private ClientStatusMessage askClientStatus(ActorRef clientManager) throws Exception {
+        final Future<Object> clientReply = Patterns.ask(clientManager, new AskStatusMessage(), 1000);
+        return (ClientStatusMessage) Await.result(clientReply, Duration.Inf());
     }
 
     private WorkerStatusMessage askWorkerStatus(ActorRef worker) throws Exception {

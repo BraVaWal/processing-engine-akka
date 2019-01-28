@@ -4,12 +4,13 @@ import it.polimi.middleware.processingengine.KeyValuePair;
 import it.polimi.middleware.processingengine.function.AggregateFunction;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AggregateOperator implements Operator {
+public class AggregateOperator implements Operator, Serializable {
 
     private final AggregateFunction aggregateFunction;
 

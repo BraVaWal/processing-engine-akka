@@ -1,8 +1,11 @@
 package it.polimi.middleware.processingengine.operator;
 
+import it.polimi.middleware.processingengine.CrashException;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 
-public class CrashOperator implements Operator {
+import java.io.Serializable;
+
+public class CrashOperator implements Operator, Serializable {
 
     private static final double crashingChance = 0.5;
 
@@ -13,7 +16,7 @@ public class CrashOperator implements Operator {
         if (operateMessage.getKeyValuePair().getValue().equalsIgnoreCase("crash")) {
             if (Math.random() < crashingChance) {
                 crashCount++;
-                throw new RuntimeException("crash");
+                throw new RuntimeException("Crash!");
             }
         }
         listener.onSendDownstream(operateMessage);

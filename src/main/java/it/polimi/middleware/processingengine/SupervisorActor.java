@@ -2,40 +2,39 @@ package it.polimi.middleware.processingengine;
 
 import akka.actor.*;
 import akka.japi.pf.DeciderBuilder;
+import akka.remote.RemoteScope;
 import it.polimi.middleware.processingengine.message.*;
 import it.polimi.middleware.processingengine.worker.SinkWorker;
 import it.polimi.middleware.processingengine.worker.SourceWorker;
-import it.polimi.middleware.processingengine.worker.Worker;
 import scala.concurrent.duration.Duration;
 
 import java.util.*;
 
 public class SupervisorActor extends AbstractActor {
 
-    private final Map<String, List<ActorRef>> workers = new HashMap<>();
+    private final Collection<ActorRef> clientManagers = new LinkedList<>();
+    private final ActorRef workerScheduler;
+
+    private final ActorRef source;
 
     private final List<String> results = new LinkedList<>();
 
     public SupervisorActor(ActorRef source, ActorRef sink) {
-        this.workers.put(SourceWorker.ID, Collections.singletonList(source));
-        this.workers.put(SinkWorker.ID, Collections.singletonList(sink));
-        addDownstreamOperator(sink, self());
+        Map<String, ActorRef> localWorkers = new HashMap<>();
+        localWorkers.put(SourceWorker.ID, source);
+        localWorkers.put(SinkWorker.ID, sink);
+        ActorRef localClientManager = getContext().actorOf(ClientManagerActor.props(self(), localWorkers));
+        clientManagers.add(localClientManager);
+
+        workerScheduler = getContext().actorOf(WorkerSchedulerActor.props());
+        workerScheduler.tell(new AddClientManagerMessage(localClientManager, 2), self());
+
+        this.source = source;
+        localClientManager.tell(new AddSourceLinkMessage(SinkWorker.ID, self()), self());
     }
 
     public static Props props(ActorRef source, ActorRef sink) {
         return Props.create(SupervisorActor.class, source, sink);
-    }
-
-    public ActorRef getSource() {
-        return workers.get(SourceWorker.ID).get(0);
-    }
-
-    public ActorRef getSink() {
-        return workers.get(SinkWorker.ID).get(0);
-    }
-
-    private void addDownstreamOperator(ActorRef sourceWorker, ActorRef downstream) {
-        sourceWorker.tell(new AddDownstreamMessage(downstream), self());
     }
 
     @Override
@@ -51,7 +50,10 @@ public class SupervisorActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
+                .match(AddRemoteMessage.class, this::onAddRemote)
                 .match(AddOperatorMessage.class, this::onAddOperator)
+                .match(AddSourceLinkMessage.class, this::onAddLink)
+                .match(AddDownstreamLinkMessage.class, this::onAddLink)
                 .match(AddJobMessage.class, this::onAddJob)
                 .match(OperateMessage.class, this::onOperate)
                 .match(AskStatusMessage.class, this::onAskStatus)
@@ -59,25 +61,33 @@ public class SupervisorActor extends AbstractActor {
                 .build();
     }
 
-    private void onAddJob(AddJobMessage message) {
-        for (KeyValuePair pair : message.getData()) {
-            getSource().tell(new OperateMessage(pair), self());
-        }
+    private void onAddRemote(AddRemoteMessage message) {
+        Address clientManagerAddress = new Address("akka.tcp", message.getRemoteSystem(), message.getHost(), message.getPort());
+        ActorRef clientManager = getContext().actorOf(ClientManagerActor.props(self()).withDeploy(new Deploy(new RemoteScope(clientManagerAddress))));
+        workerScheduler.tell(new AddClientManagerMessage(clientManager, 0), self());
+        clientManagers.add(clientManager);
     }
 
     private void onAddOperator(AddOperatorMessage message) {
-        final List<ActorRef> sources = workers.getOrDefault(message.getSourceId(), new LinkedList<>());
-        final List<ActorRef> downstream = workers.getOrDefault(message.getDownstreamId(), new LinkedList<>());
-        final List<ActorRef> newWorkers = new ArrayList<>(message.getPartitions());
         for (int i = 0; i < message.getPartitions(); i++) {
-            final ActorRef worker = getContext().actorOf(Worker.props(message.getId() + "-" + i, message.getOperatorFactory().build(), downstream));
-            for (ActorRef source : sources) {
-                addDownstreamOperator(source, worker);
-            }
-            newWorkers.add(worker);
+            workerScheduler.tell(new AddOperatorMessage(message.getId() + "-" + i,
+                    message.getSourceId(),
+                    message.getDownstreamId(),
+                    message.getOperatorFactory(),
+                    message.getPartitions()), self());
         }
-        workers.put(message.getId(), newWorkers);
+    }
 
+    private void onAddLink(Object message) {
+        for (ActorRef clientManager : clientManagers) {
+            clientManager.tell(message, sender());
+        }
+    }
+
+    private void onAddJob(AddJobMessage message) {
+        for (KeyValuePair pair : message.getData()) {
+            source.tell(new OperateMessage(pair), self());
+        }
     }
 
     private void onOperate(OperateMessage message) {
@@ -88,7 +98,7 @@ public class SupervisorActor extends AbstractActor {
     }
 
     private void onAskStatus(AskStatusMessage message) {
-        sender().tell(new StatusMessage(workers.values()), self());
+        sender().tell(new StatusMessage(clientManagers), self());
     }
 
     private void onAskResult(AskResultMessage message) {

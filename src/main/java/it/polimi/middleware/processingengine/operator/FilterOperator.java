@@ -3,9 +3,10 @@ package it.polimi.middleware.processingengine.operator;
 import it.polimi.middleware.processingengine.KeyValuePair;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 
+import java.io.Serializable;
 import java.util.function.Predicate;
 
-public class FilterOperator implements Operator {
+public class FilterOperator implements Operator, Serializable {
 
     private final Predicate<KeyValuePair> predicate;
 

@@ -8,13 +8,13 @@ import java.util.List;
 
 public class StatusMessage implements Serializable {
 
-    private final Collection<List<ActorRef>> workers;
+    private final Collection<ActorRef> clientManagers;
 
-    public StatusMessage(Collection<List<ActorRef>> workers) {
-        this.workers = workers;
+    public StatusMessage(Collection<ActorRef> clientManagers) {
+        this.clientManagers = clientManagers;
     }
 
-    public Collection<List<ActorRef>> getWorkers() {
-        return workers;
+    public Collection<ActorRef> getClientManagers() {
+        return clientManagers;
     }
 }

@@ -1,9 +1,12 @@
 package it.polimi.middleware.processingengine.worker;
 
 import akka.actor.AbstractActor;
+import akka.actor.ActorInitializationException;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.pattern.Patterns;
+import it.polimi.middleware.processingengine.CrashException;
+import it.polimi.middleware.processingengine.SendDownstreamException;
 import it.polimi.middleware.processingengine.message.*;
 import it.polimi.middleware.processingengine.operator.Operator;
 import scala.concurrent.Await;
@@ -27,8 +30,6 @@ public class Worker extends AbstractActor {
     private final Operator operator;
 
     private final Queue<UUID> operated = new LinkedList<>();
-    private OperateMessage lastReceivedNotOperated;
-    private OperateMessage lastReceivedOperated;
 
     public Worker(String id, Operator operator) {
         this(id, operator, new LinkedList<>());
@@ -50,10 +51,20 @@ public class Worker extends AbstractActor {
 
     @Override
     public void postRestart(Throwable reason) throws Exception {
-        if (lastReceivedNotOperated != null) {
-            operate(lastReceivedNotOperated);
-        } else if (lastReceivedOperated != null) {
-            sendDownstream(lastReceivedOperated);
+        if (reason instanceof CrashException) {
+            downstreamWorkers.addAll(((CrashException) reason).getDownstream());
+            operate(((CrashException) reason).getOperateMessage());
+        } else if (reason instanceof SendDownstreamException) {
+            downstreamWorkers.addAll(((SendDownstreamException) reason).getDownstream());
+            sendDownstream(((SendDownstreamException) reason).getOperateMessage());
+        } else if (reason instanceof ActorInitializationException) {
+            if (reason.getCause() instanceof CrashException) {
+                downstreamWorkers.addAll(((CrashException) reason.getCause()).getDownstream());
+                operate(((CrashException) reason.getCause()).getOperateMessage());
+            } else if (reason.getCause() instanceof SendDownstreamException) {
+                downstreamWorkers.addAll(((SendDownstreamException) reason.getCause()).getDownstream());
+                sendDownstream(((SendDownstreamException) reason.getCause()).getOperateMessage());
+            }
         }
     }
 
@@ -68,12 +79,7 @@ public class Worker extends AbstractActor {
 
     private void onOperateMessage(OperateMessage operateMessage) {
         if (!operated.contains(operateMessage.getId())) {
-            if (lastReceivedNotOperated != null && lastReceivedNotOperated != operateMessage) {
-                throw new IllegalStateException("Still handling older message!!!");
-            }
-            lastReceivedNotOperated = operateMessage;
             operate(operateMessage);
-            lastReceivedNotOperated = null;
             sender().tell(new AcknowledgeMessage(operateMessage.getId()), self());
         } else {
             sender().tell(new AcknowledgeMessage(operateMessage.getId()), self());
@@ -88,33 +94,39 @@ public class Worker extends AbstractActor {
 
     private void onAskStatusMessage(AskStatusMessage askStatusMessage) {
         final List<String> downstreamAsString = downstreamWorkers.stream().map(ActorRef::toString).collect(Collectors.toList());
-        sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString, operated, lastReceivedNotOperated, lastReceivedOperated), self());
+        sender().tell(new WorkerStatusMessage(id, operator, downstreamAsString, operated), self());
     }
 
     private void operate(OperateMessage operateMessage) {
-        operator.operate(operateMessage, this::sendDownstream);
-        if (operated.size() > MAX_LAST_MESSAGES_STORED) {
-            operated.poll();
+        try {
+            operator.operate(operateMessage, this::sendDownstream);
+            if (operated.size() > MAX_LAST_MESSAGES_STORED) {
+                operated.poll();
+            }
+            operated.add(operateMessage.getId());
+        } catch (SendDownstreamException e) {
+            throw new SendDownstreamException(e.getOperateMessage(), downstreamWorkers);
+        } catch (RuntimeException e) {
+            throw new CrashException(operateMessage, downstreamWorkers);
         }
-        operated.add(operateMessage.getId());
     }
 
     private void sendDownstream(OperateMessage operateMessage) {
-        lastReceivedNotOperated = null;
-        lastReceivedOperated = operateMessage;
+        if (downstreamWorkers.size() == 0) {
+            return;
+        }
         final int receiver = operateMessage.getKeyValuePair().getKey().hashCode() % downstreamWorkers.size();
         int triesLeft = MAX_SEND_TRIES;
         while (triesLeft > 0) {
             try {
                 AcknowledgeMessage ack = sendOperateMessage(downstreamWorkers.get(receiver), operateMessage);
                 if (ack.getId().equals(operateMessage.getId())) {
-                    lastReceivedOperated = null;
+                    triesLeft = 0;
                 }
-                triesLeft = 0;
             } catch (Exception e) {
                 triesLeft--;
                 if (triesLeft == 0) {
-                    throw new RuntimeException("Max resend exceeded!");
+                    throw new SendDownstreamException(operateMessage, downstreamWorkers);
                 }
             }
         }

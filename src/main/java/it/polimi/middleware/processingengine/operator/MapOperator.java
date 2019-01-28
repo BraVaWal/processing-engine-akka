@@ -3,7 +3,9 @@ package it.polimi.middleware.processingengine.operator;
 import it.polimi.middleware.processingengine.function.MapFunction;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 
-public class MapOperator implements Operator {
+import java.io.Serializable;
+
+public class MapOperator implements Operator, Serializable {
 
     private final MapFunction mapFunction;
 

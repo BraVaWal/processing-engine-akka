@@ -8,6 +8,7 @@ import com.typesafe.config.ConfigFactory;
 import it.polimi.middleware.processingengine.function.AggregateFunction;
 import it.polimi.middleware.processingengine.function.MapFunction;
 import it.polimi.middleware.processingengine.message.AddOperatorMessage;
+import it.polimi.middleware.processingengine.message.AddRemoteMessage;
 import it.polimi.middleware.processingengine.operator.factory.AggregateOperatorFactory;
 import it.polimi.middleware.processingengine.operator.factory.CrashOperatorFactory;
 import it.polimi.middleware.processingengine.operator.factory.MapOperatorFactory;
@@ -18,17 +19,24 @@ import java.io.Serializable;
 
 public class RemoteApplication {
 
-    public static final String REMOTE_IP = "192.168.1.143";
-    public static final String REMOTE_PORT = "2552";
+    public static final String LOCAL_SYSTEM_NAME = "Remote";
+    public static final String LOCAL_IP = "127.0.0.1";
+    public static final int LOCAL_PORT = 2553;
+
+    public static final String REMOTE_SYSTEM_NAME = "Main";
+    public static final String REMOTE_IP = "127.0.0.1";
+    public static final int REMOTE_PORT = 2552;
 
     public static void main(String[] args) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         File configFile = new File(classLoader.getResource("application-remote.conf").getFile());
 
         final Config config = ConfigFactory.parseFile(configFile);
-        final ActorSystem system = ActorSystem.create("Remote", config);
+        final ActorSystem system = ActorSystem.create(LOCAL_SYSTEM_NAME, config);
 
-        ActorSelection supervisorActor = system.actorSelection("akka.tcp://Main@"+REMOTE_IP + ":" + REMOTE_PORT + "/user/SupervisorActor");
+        ActorSelection supervisorActor = system.actorSelection("akka.tcp://" + REMOTE_SYSTEM_NAME + "@" + REMOTE_IP + ":" + REMOTE_PORT + "/user/SupervisorActor");
+
+        supervisorActor.tell(new AddRemoteMessage(LOCAL_SYSTEM_NAME, LOCAL_IP, LOCAL_PORT), ActorRef.noSender());
 
         final OperatorFactory mapOperatorFactory = new MapOperatorFactory((MapFunction & Serializable) keyValuePair -> new KeyValuePair(keyValuePair.getKey(),
                 keyValuePair.getValue().toUpperCase()));

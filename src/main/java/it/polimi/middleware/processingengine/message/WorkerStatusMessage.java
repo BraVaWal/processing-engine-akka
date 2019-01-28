@@ -13,16 +13,12 @@ public class WorkerStatusMessage implements Serializable {
     private final Operator operator;
     private final List<String> downstream;
     private final Queue<UUID> operated;
-    private final OperateMessage lastReceivedNotOperated;
-    private final OperateMessage lastReceivedOperated;
 
-    public WorkerStatusMessage(String id, Operator operator, List<String> downstream, Queue<UUID> operated, OperateMessage lastReceivedNotOperated, OperateMessage lastReceivedOperated) {
+    public WorkerStatusMessage(String id, Operator operator, List<String> downstream, Queue<UUID> operated) {
         this.id = id;
         this.operator = operator;
         this.downstream = downstream;
         this.operated = operated;
-        this.lastReceivedNotOperated = lastReceivedNotOperated;
-        this.lastReceivedOperated = lastReceivedOperated;
     }
 
     public String getId() {
@@ -39,13 +35,5 @@ public class WorkerStatusMessage implements Serializable {
 
     public Queue<UUID> getOperated() {
         return operated;
-    }
-
-    public OperateMessage getLastReceivedNotOperated() {
-        return lastReceivedNotOperated;
-    }
-
-    public OperateMessage getLastReceivedOperated() {
-        return lastReceivedOperated;
     }
 }

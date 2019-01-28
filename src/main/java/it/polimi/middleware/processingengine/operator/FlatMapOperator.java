@@ -4,9 +4,10 @@ import it.polimi.middleware.processingengine.KeyValuePair;
 import it.polimi.middleware.processingengine.function.FlatMapFunction;
 import it.polimi.middleware.processingengine.message.OperateMessage;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-public class FlatMapOperator implements Operator {
+public class FlatMapOperator implements Operator, Serializable {
 
     private final FlatMapFunction flatMapFunction;
 
